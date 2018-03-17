@@ -11,4 +11,7 @@ a:hover {
     text-decoration: underline;
 }
 
-
+.message {
+    background-color: #ae0000;
+    color: white;
+}

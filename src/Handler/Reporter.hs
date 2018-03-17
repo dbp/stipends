@@ -40,6 +40,7 @@ loginH ctxt token = do
     Nothing -> return ()
     Just r -> do
       setInSession ctxt reporterKey (tshow $ State.Types.Reporter.id r)
+      setMessage ctxt $ "Successfully logged in as " <> (fromMaybe "" $ name r) <> "."
   redirect "/"
 
 

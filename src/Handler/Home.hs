@@ -36,6 +36,7 @@ handle ctxt =
         (_, Just stipend) -> do
           r <- Handler.Reporter.getReporter ctxt
           State.Stipend.create ctxt (stipend { Stipend.reporterId = Reporter.id r})
+          setMessage ctxt "Submitted a new stipend. Thanks!"
           redirect "/"
 
 stipendForm :: Ctxt -> Form Text IO Stipend.Stipend

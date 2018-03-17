@@ -5,6 +5,8 @@ import           Control.Monad              (join)
 
 
 import           Data.Map                   (Map)
+import qualified Data.Map                   as M
+import           Data.Maybe                 (fromMaybe)
 import           Data.Monoid                ((<>))
 import           Data.Pool                  (Pool)
 import           Data.Text                  (Text)
@@ -37,12 +39,19 @@ render ctxt = renderWith ctxt mempty
 
 renderWith :: Ctxt -> Substitutions -> Text -> IO (Maybe Response)
 renderWith ctxt subs tpl =
-  do t <- L.renderWith (library ctxt) subs () (T.splitOn "/" tpl)
+  do message <- getMessage ctxt
+     t <- L.renderWith (library ctxt) (M.union (L.subs [("render-message", L.textFill (fromMaybe "" message))]) subs) () (T.splitOn "/" tpl)
      case t of
        Nothing -> return Nothing
        Just t' -> okHtml t'
 
+setMessage :: Ctxt -> Text -> IO ()
+setMessage ctxt msg = setInSession ctxt "message" msg
 
+getMessage :: Ctxt -> IO (Maybe Text)
+getMessage ctxt = do msg <- getFromSession ctxt "message"
+                     clearFromSession ctxt "message"
+                     return msg
 
 getFromSession :: Ctxt -> Text -> IO (Maybe Text)
 getFromSession ctxt k =
