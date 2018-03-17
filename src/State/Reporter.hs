@@ -13,12 +13,15 @@ import           State.Types.Reporter
 
 
 get :: Ctxt -> Int -> IO (Maybe Reporter)
-get ctxt id' = withResource (Context.db ctxt) $ \c -> listToMaybe <$> query c "SELECT id, created_at, last_ip, token, name, trusted_at, curator_at FROM reporters WHERE id = ?" (Only id')
+get ctxt id' = withResource (Context.db ctxt) $ \c -> listToMaybe <$> query c "SELECT id, created_at, fingerprint, token, name, trusted_at, curator_at FROM reporters WHERE id = ?" (Only id')
+
+getAnonByFingerprint :: Ctxt -> Text -> IO (Maybe Reporter)
+getAnonByFingerprint ctxt f = withResource (Context.db ctxt) $ \c -> listToMaybe <$> query c "SELECT id, created_at, fingerprint, token, name, trusted_at, curator_at FROM reporters WHERE fingerprint = ?" (Only f)
 
 
 create :: Ctxt -> Reporter -> IO (Maybe Int)
 create ctxt reporter = withResource (Context.db ctxt) $ \c -> do
-  r<- listToMaybe <$> query c "INSERT INTO reporters (last_ip, name) VALUES (?,?) RETURNING id" (lastIp reporter, name reporter)
+  r<- listToMaybe <$> query c "INSERT INTO reporters (fingerprint, name) VALUES (?,?) RETURNING id" (fingerprint reporter, name reporter)
   case r of
     Just (Only r) -> return $ Just r
     Nothing       -> return Nothing

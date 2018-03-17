@@ -8,13 +8,13 @@ import           Database.PostgreSQL.Simple.Types
 
 
 data Reporter =
-     Reporter { id        :: Int
-              , createdAt :: UTCTime
-              , lastIp    :: Text
-              , token     :: Text
-              , name      :: Text
-              , trustedAt :: Maybe UTCTime
-              , curatorAt :: Maybe UTCTime
+     Reporter { id          :: Int
+              , createdAt   :: UTCTime
+              , fingerprint :: Text
+              , token       :: Text
+              , name        :: Maybe Text
+              , trustedAt   :: Maybe UTCTime
+              , curatorAt   :: Maybe UTCTime
               } deriving (Eq, Show, Read)
 
 instance FromRow Reporter where

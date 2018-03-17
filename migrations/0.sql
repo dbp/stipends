@@ -1,7 +1,7 @@
 CREATE TABLE reporters (
     id serial PRIMARY KEY,
     created_at timestamptz NOT NULL DEFAULT now(),
-    last_ip text NOT NULL,
+    fingerprint text NOT NULL,
     token text NOT NULL default md5(random()::text),
     name text,
     trusted_at timestamptz,

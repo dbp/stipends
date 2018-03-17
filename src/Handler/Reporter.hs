@@ -38,11 +38,23 @@ getReporter ctxt = do
         Nothing -> mkR
     Nothing -> mkR
   where mkR = do
-          let ip = T.decodeUtf8 $ fromMaybe "N/A" (lookup "X-Forwarded-For" (requestHeaders (fst $ request ctxt)))
+          let mip = T.decodeUtf8 <$> lookup "X-Forwarded-For" (requestHeaders (fst $ request ctxt))
+          let muser = T.decodeUtf8 <$> lookup "User-Agent" (requestHeaders (fst $ request ctxt))
+          case (mip, muser) of
+            (Nothing, Nothing) -> do
+              let f = "N/A"
+              mkNewAnon f
+            _ -> do
+              let f = fromMaybe "" mip <> "///" <> fromMaybe "" muser
+              mr <- State.getAnonByFingerprint ctxt f
+              case mr of
+                Just r  -> return r
+                Nothing -> mkNewAnon f
+        mkNewAnon ip = do
           -- NOTE(dbp 2018-03-17): We'll throw errors if either of these fail.
           -- These will be DB failures, which should be unlikely, and not much
           -- to do aside from report (which an exception will do). ¯\_(ツ)_/¯
-          Just i <- State.create ctxt (Reporter 0 (UTCTime (ModifiedJulianDay 0) 0) ip "" "Anonymous" Nothing Nothing)
+          Just i <- State.create ctxt (Reporter 0 (UTCTime (ModifiedJulianDay 0) 0) ip "" Nothing Nothing Nothing)
           Just r <- State.get ctxt i
           return r
 
