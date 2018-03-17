@@ -1,0 +1,64 @@
+name:                stipends
+version:             0.1.0.0
+-- synopsis:
+-- description:
+homepage:            https://github.com/dbp/stipends
+license:             ISC
+license-file:        LICENSE
+author:              Daniel Patterson
+maintainer:          dbp@dbpmail.net
+copyright:           2017 Daniel Patterson
+category:            Web
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+executable stipends
+  hs-source-dirs:      src
+  main-is:             Main.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  other-modules:       Context
+                       Site
+                       State.Cache
+                       Handler.Home
+                       Handler.Reporter
+                       State.Reporter
+                       State.Stipend
+                       State.Types.Reporter
+                       State.Types.Stipend
+                       Text.Digestive.Larceny
+                       Web.Fn.Extra.Digestive
+  build-depends:       base >= 4.7 && < 5
+                     , fn
+                     , larceny
+                     , logging
+                     , text
+                     , containers
+                     , wai
+                     , warp
+                     , digestive-functors
+                     , mtl
+                     , lucid
+                     , resourcet
+                     , http-types
+                     , bytestring
+                     , wai-extra
+                     , directory
+                     , postgresql-simple
+                     , resource-pool
+                     , heroku
+                     , time
+                     , wai-middleware-rollbar
+                     , vault
+                     , clientsession
+                     , data-default
+                     , cereal-text
+                     , wai-session
+                     , wai-session-clientsession
+                     , cookie
+                     , yaml
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: https://github.com/dbp/stipends

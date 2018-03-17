@@ -1,0 +1,25 @@
+resolver: lts-10.8
+packages:
+- '.'
+- location:
+    git: https://github.com/dbp/larceny.git
+    commit: 911f8f3abfd3a37de4ac39fd70cdd0b8574eb8a8
+  extra-dep: true
+- location:
+    git: https://github.com/positiondev/fn.git
+    commit: 7439d44ac8ef8372478e09cd19cc2bd7c66580a3
+  extra-dep: true
+  subdirs:
+  - fn
+extra-deps:
+- digestive-functors-0.8.3.0
+- heroku-0.1.2.3
+- html-entities-1.1.4.2
+- logging-3.0.5
+- wai-session-clientsession-0.1
+
+
+# - html-entities-1.1.4
+# - digestive-functors-0.8.2.0
+# - heroku-0.1.2.3
+# - wai-middleware-rollbar-0.4.0
