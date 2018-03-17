@@ -2,8 +2,7 @@
 module Context where
 
 import           Control.Monad              (join)
-
-
+import           Control.Monad.Trans        (liftIO)
 import           Data.Map                   (Map)
 import qualified Data.Map                   as M
 import           Data.Maybe                 (fromMaybe)
@@ -11,10 +10,12 @@ import           Data.Monoid                ((<>))
 import           Data.Pool                  (Pool)
 import           Data.Text                  (Text)
 import qualified Data.Text                  as T
+import           Data.Time.Clock.POSIX      (utcTimeToPOSIXSeconds)
 import qualified Data.Vault.Lazy            as Vault
 import           Database.PostgreSQL.Simple (Connection)
 import           Network.Wai                (Request (..), Response)
 import           Network.Wai.Session        (Session)
+import           System.Directory           (getModificationTime)
 import           Web.Fn
 import qualified Web.Larceny                (Fill, Library, Substitutions)
 import qualified Web.Larceny                as L
@@ -40,10 +41,21 @@ render ctxt = renderWith ctxt mempty
 renderWith :: Ctxt -> Substitutions -> Text -> IO (Maybe Response)
 renderWith ctxt subs tpl =
   do message <- getMessage ctxt
-     t <- L.renderWith (library ctxt) (M.union (L.subs [("render-message", L.textFill (fromMaybe "" message))]) subs) () (T.splitOn "/" tpl)
+     t <- L.renderWith (library ctxt) (M.union (builtInSubs message) subs) () (T.splitOn "/" tpl)
      case t of
        Nothing -> return Nothing
        Just t' -> okHtml t'
+
+builtInSubs :: Maybe Text -> Substitutions
+builtInSubs message =
+  L.subs [("render-message", L.textFill (fromMaybe "" message))
+         ,("css", L.useAttrs (L.a "path") cssFill)]
+
+cssFill :: Text -> Fill
+cssFill pth = L.rawTextFill' $ do
+  mtime <- liftIO $ getModificationTime (T.unpack $ removeLeadingSlash $ T.replace "/%cache%/" "/" pth)
+  return $ "<link rel='stylesheet' href='" <> (T.replace "%cache%" (T.pack $ show (utcTimeToPOSIXSeconds mtime)) pth) <> "'>"
+  where removeLeadingSlash t = if "/" `T.isPrefixOf` t then T.drop 1 t else t
 
 setMessage :: Ctxt -> Text -> IO ()
 setMessage ctxt msg = setInSession ctxt "message" msg

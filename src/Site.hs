@@ -74,6 +74,10 @@ initializer =
 
 site :: Ctxt -> IO Response
 site ctxt = route ctxt [ path "static" ==> staticServe "static"
+                       -- NOTE(dbp 2018-03-17): The following allows url
+                       -- busting, i.e., /static/TIMESTAMP/path/to/file.css
+                       , path "static" // segment ==>
+                         \ctxt (_ :: Text) -> staticServe "static" ctxt
                        , end ==> Home.handle
                        , path "reporter" ==> Reporter.handle
                        , anything ==> larcenyServe

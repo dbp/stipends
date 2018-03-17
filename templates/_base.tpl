@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <html>
     <head>
-        <link rel="stylesheet" href="/static/style.css"/>
+        <css path="/static/%cache%/style.css"/>
     </head>
     <body>
 
