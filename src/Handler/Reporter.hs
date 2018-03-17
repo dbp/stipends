@@ -27,6 +27,22 @@ import           Context
 import qualified State.Reporter            as State
 import           State.Types.Reporter
 
+reporterKey :: Text
+reporterKey = "reporter_id"
+
+handle :: Ctxt -> IO (Maybe Response)
+handle ctxt = route ctxt [ path "login" // segment ==> loginH ]
+
+loginH :: Ctxt -> Text -> IO (Maybe Response)
+loginH ctxt token = do
+  mr <- State.getByToken ctxt token
+  case mr of
+    Nothing -> return ()
+    Just r -> do
+      setInSession ctxt reporterKey (tshow $ State.Types.Reporter.id r)
+  redirect "/"
+
+
 getReporter :: Ctxt -> IO Reporter
 getReporter ctxt = do
   mrid <- (>>= readMaybe . T.unpack) <$> getFromSession ctxt "reporter_id"

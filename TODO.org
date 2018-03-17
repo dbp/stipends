@@ -4,3 +4,4 @@
 ** DONE Switch to proper logger framework
    CLOSED: [2018-03-17 Sat 15:40]
 ** TODO Copy housetab auth framework, w/ permanent tokens
+** TODO Add some notification system for actions...
