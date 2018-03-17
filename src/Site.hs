@@ -51,6 +51,7 @@ import qualified Web.Larceny                        as L
 import           Context
 import qualified Handler.Home                       as Home
 import qualified Handler.Reporter                   as Reporter
+import qualified Handler.Stipend                    as Stipend
 import qualified State.Cache                        as Cache
 
 initializer :: IO Ctxt
@@ -80,6 +81,7 @@ site ctxt = route ctxt [ path "static" ==> staticServe "static"
                          \ctxt (_ :: Text) -> staticServe "static" ctxt
                        , end ==> Home.handle
                        , path "reporter" ==> Reporter.handle
+                       , path "stipend" ==> Stipend.handle
                        , anything ==> larcenyServe
                        ]
             `fallthrough` do r <- render ctxt "404"

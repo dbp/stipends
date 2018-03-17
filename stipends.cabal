@@ -22,6 +22,7 @@ executable stipends
                        State.Cache
                        Handler.Home
                        Handler.Reporter
+                       Handler.Stipend
                        State.Reporter
                        State.Stipend
                        State.Types.Reporter

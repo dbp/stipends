@@ -23,6 +23,7 @@ import           Web.Larceny               (fillChildren, fillChildrenWith,
 
 import           Context
 import qualified Handler.Reporter
+import qualified Handler.Stipend
 import qualified State.Stipend
 import qualified State.Types.Reporter      as Reporter
 import qualified State.Types.Stipend       as Stipend
@@ -35,15 +36,17 @@ handle ctxt =
         (v, Nothing)     -> renderWith ctxt (formFills v) "index"
         (_, Just stipend) -> do
           r <- Handler.Reporter.getReporter ctxt
-          State.Stipend.create ctxt (stipend { Stipend.reporterId = Reporter.id r})
+          Just id' <- State.Stipend.create ctxt (stipend { Stipend.reporterId = Reporter.id r})
+          Just stipend <- State.Stipend.get ctxt id'
           setMessage ctxt "Submitted a new stipend. Thanks!"
-          redirect "/"
+          redirect $ Handler.Stipend.url stipend
 
 stipendForm :: Ctxt -> Form Text IO Stipend.Stipend
 stipendForm ctxt =
   Stipend.Stipend
   <$> pure 0
   <*> pure (UTCTime (ModifiedJulianDay 0) 0)
+  <*> pure ""
   <*> "amount" .: stringRead "Must be a number (without commas or $), like 25400" Nothing
   <*> "academic_year" .: choice (map (\yr -> (yr, tshow yr <> "-" <> tshow (yr+1))) [2013..2019]) Nothing
   <*> "period" .: choice [(Stipend.Yearly, "Yearly")

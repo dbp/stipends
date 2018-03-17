@@ -11,8 +11,9 @@ CREATE TABLE reporters (
 CREATE TABLE stipends (
     id serial PRIMARY KEY,
     created_at timestamptz NOT NULL DEFAULT now(),
+    token text NOT NULL default md5(random()::text),
     amount integer NOT NULL,
-    academic_year text NOT NULL,
+    academic_year int NOT NULL,
     period text NOT NULL,
     summer_guarantee text NOT NULL,
     year_in_program int,

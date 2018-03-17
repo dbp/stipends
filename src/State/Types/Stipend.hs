@@ -16,6 +16,12 @@ data SummerGuarantee = FundedYearRound
                      | FundedUnknown
                      deriving (Eq, Show, Read)
 
+tshowSummerGuarantee :: SummerGuarantee -> Text
+tshowSummerGuarantee FundedYearRound = "yearround"
+tshowSummerGuarantee FundedAcademic  = "academic"
+tshowSummerGuarantee FundedUnknown   = "unknown"
+
+
 instance FromField SummerGuarantee where
   fromField f mdata = do r <- fromField f mdata
                          case r :: Text of
@@ -24,11 +30,14 @@ instance FromField SummerGuarantee where
                            "unknown"   -> return FundedUnknown
                            _           -> mzero
 instance ToField SummerGuarantee where
-  toField FundedYearRound = toField ("yearround" :: Text)
-  toField FundedAcademic  = toField ("academic" :: Text)
-  toField FundedUnknown   = toField ("unknown" :: Text)
+  toField s = toField (tshowSummerGuarantee s)
 
 data Period = Yearly | Monthly | BiMonthly deriving (Eq, Show, Read)
+
+tshowPeriod :: Period -> Text
+tshowPeriod Yearly    = "yearly"
+tshowPeriod Monthly   = "monthly"
+tshowPeriod BiMonthly = "bimonthly"
 
 instance FromField Period where
   fromField f mdata = do r <- fromField f mdata
@@ -38,14 +47,13 @@ instance FromField Period where
                            "bimonthly" -> return BiMonthly
                            _           -> mzero
 instance ToField Period where
-  toField Yearly    = toField ("yearly" :: Text)
-  toField Monthly   = toField ("monthly" :: Text)
-  toField BiMonthly = toField ("bimonthly" :: Text)
+  toField p = toField (tshowPeriod p)
 
 
 data Stipend =
      Stipend { id              :: Int
              , createdAt       :: UTCTime
+             , token           :: Text
              , amount          :: Int
              , academicYear    :: Int
              , period          :: Period
@@ -59,6 +67,7 @@ data Stipend =
 
 instance FromRow Stipend where
   fromRow = Stipend <$> field
+                    <*> field
                     <*> field
                     <*> field
                     <*> field

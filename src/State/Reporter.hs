@@ -25,7 +25,7 @@ getAnonByFingerprint ctxt f = withResource (Context.db ctxt) $ \c -> listToMaybe
 
 create :: Ctxt -> Reporter -> IO (Maybe Int)
 create ctxt reporter = withResource (Context.db ctxt) $ \c -> do
-  r<- listToMaybe <$> query c "INSERT INTO reporters (fingerprint, name) VALUES (?,?) RETURNING id" (fingerprint reporter, name reporter)
+  r <- listToMaybe <$> query c "INSERT INTO reporters (fingerprint, name) VALUES (?,?) RETURNING id" (fingerprint reporter, name reporter)
   case r of
     Just (Only r) -> return $ Just r
     Nothing       -> return Nothing
