@@ -17,9 +17,10 @@ import           Data.Time.Format
 import           Network.HTTP.Types.Method
 import           Network.Wai
 import           Text.Digestive.Form
-import           Text.Digestive.Larceny
+import           Text.Digestive.Larceny    hiding (Substitutions)
 import           Text.Read                 (readMaybe)
 import           Web.Fn
+import           Web.Fn.Extra.Digestive
 import           Web.Larceny               (fillChildren, fillChildrenWith,
                                             mapSubs, subs, textFill)
 
@@ -28,7 +29,9 @@ import qualified State.Reporter            as State
 import           State.Types.Reporter
 
 handle :: Ctxt -> IO (Maybe Response)
-handle ctxt = route ctxt [ path "login" // segment ==> loginH ]
+handle ctxt = route ctxt [ path "login" // segment ==> loginH
+                         , path "new" ==> newH
+                         ]
 
 loginH :: Ctxt -> Text -> IO (Maybe Response)
 loginH ctxt token = do
@@ -67,4 +70,25 @@ getReporter ctxt = do
           Just r <- State.get ctxt i
           return r
 
+newH :: Ctxt -> IO (Maybe Response)
+newH ctxt = requireCurator ctxt (return Nothing) $ do
+  runForm ctxt "add" ("name" .: text Nothing) $
+    \r ->
+      case r of
+        (v, Nothing)     -> renderWith ctxt (formFills v) "reporter/new"
+        (_, Just name) -> do
+          now <- getCurrentTime
+          State.create ctxt (Reporter 0 (UTCTime (ModifiedJulianDay 0) 0) "N/A" "" (Just name) (Just now) Nothing)
+          redirect "/curator/organizers"
 
+
+reporterSubs :: Reporter -> Substitutions
+reporterSubs (Reporter i cr f t name trust cur) =
+  subs [("id", textFill $ tshow i)
+       ,("created-at",  dateFill cr)
+       ,("fingerprint", textFill f)
+       ,("token", textFill t)
+       ,("name", textFill (fromMaybe "" name))
+       ,("trusted-at", optionalDateFill trust)
+       ,("curator-at", optionalDateFill cur)
+        ]

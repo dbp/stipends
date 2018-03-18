@@ -98,7 +98,7 @@ uploadFile ctxt path key = do
   plain <- BS.readFile path
   body <- toBody <$> AES.encrypt key plain
   runResourceT $ runAWS (env & envLogger .~ lgr) $
-        within Northirginia $
+        within NorthVirginia $
             send (putObject (BucketName $ Context.bucket ctxt) (ObjectKey uuid) body)
   return uuid
 

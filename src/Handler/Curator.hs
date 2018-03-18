@@ -41,12 +41,14 @@ import qualified Web.Larceny               as L
 import           Context
 import qualified Handler.Reporter
 import qualified Handler.Stipend
+import qualified State.Reporter
 import qualified State.Stipend
 import qualified State.Types.Reporter      as Reporter
 
 handle :: Ctxt -> IO (Maybe Response)
 handle ctxt = route ctxt [path "authenticate" // param "redirect" ==> authenticateH
-                         ,path "review" ==> reviewH ]
+                         ,path "review" ==> reviewH
+                         ,path "organizers" ==> organizersH]
 
 authenticateH :: Ctxt -> Int -> IO (Maybe Response)
 authenticateH ctxt id' =
@@ -59,10 +61,13 @@ authenticateH ctxt id' =
               redirect $ "/document/" <> tshow id'
 
 reviewH :: Ctxt -> IO (Maybe Response)
-reviewH ctxt = do
-  mr <- Context.lookupReporter ctxt
-  case mr >>= Reporter.curatorAt of
-    Nothing -> return Nothing
-    Just _ -> do
-      unverified <- State.Stipend.getWithUnverifiedDocuments ctxt
-      renderWith ctxt (subs [("stipends", mapSubs (Handler.Stipend.stipendSubs ctxt) unverified)]) "curator/review"
+reviewH ctxt = requireCurator ctxt (return Nothing) $ do
+  unverified <- State.Stipend.getWithUnverifiedDocuments ctxt
+  renderWith ctxt (subs [("stipends", mapSubs (Handler.Stipend.stipendSubs ctxt) unverified)]) "curator/review"
+
+organizersH :: Ctxt -> IO (Maybe Response)
+organizersH ctxt = requireCurator ctxt (return Nothing) $ do
+  reps <- State.Reporter.getTrusted ctxt
+  renderWith ctxt (subs [("reporters",
+                          mapSubs Handler.Reporter.reporterSubs reps)])
+    "curator/organizers"

@@ -11,7 +11,8 @@
    CLOSED: [2018-03-18 Sun 16:27]
 ** DONE Add review page for curators with links to docs.
    CLOSED: [2018-03-18 Sun 17:11]
-** TODO Add page for curators to create new reporter accounts.
+** DONE Add page for curators to create new reporter accounts.
+   CLOSED: [2018-03-18 Sun 17:31]
 ** TODO Add public view with aggregate data
 ** DONE Add URL busting for CSS files
 ** DONE Add stipend page, redirect there after creation

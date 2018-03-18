@@ -21,6 +21,8 @@ get = getReporter
 getByToken :: Ctxt -> Text -> IO (Maybe Reporter)
 getByToken ctxt token = withResource (Context.db ctxt) $ \c -> listToMaybe <$> query c "SELECT id, created_at, fingerprint, token, name, trusted_at, curator_at FROM reporters WHERE token = ?" (Only token)
 
+getTrusted :: Ctxt -> IO [Reporter]
+getTrusted ctxt = withResource (Context.db ctxt) $ \c -> query_ c "SELECT id, created_at, fingerprint, token, name, trusted_at, curator_at FROM reporters WHERE trusted_at IS NOT NULL ORDER BY created_at ASC"
 
 getAnonByFingerprint :: Ctxt -> Text -> IO (Maybe Reporter)
 getAnonByFingerprint ctxt f = withResource (Context.db ctxt) $ \c -> listToMaybe <$> query c "SELECT id, created_at, fingerprint, token, name, trusted_at, curator_at FROM reporters WHERE fingerprint = ?" (Only f)
@@ -28,7 +30,7 @@ getAnonByFingerprint ctxt f = withResource (Context.db ctxt) $ \c -> listToMaybe
 
 create :: Ctxt -> Reporter -> IO (Maybe Int)
 create ctxt reporter = withResource (Context.db ctxt) $ \c -> do
-  r <- listToMaybe <$> query c "INSERT INTO reporters (fingerprint, name) VALUES (?,?) RETURNING id" (fingerprint reporter, name reporter)
+  r <- listToMaybe <$> query c "INSERT INTO reporters (fingerprint, name, trusted_at) VALUES (?,?, ?) RETURNING id" (fingerprint reporter, name reporter, trustedAt reporter)
   case r of
     Just (Only r) -> return $ Just r
     Nothing       -> return Nothing
