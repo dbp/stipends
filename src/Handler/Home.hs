@@ -4,6 +4,7 @@ module Handler.Home where
 
 import           Control.Logging
 import           Control.Monad.Trans       (liftIO)
+import           Data.List                 (nub, sort, sortOn)
 import qualified Data.Map                  as M
 import           Data.Maybe                (fromJust, fromMaybe)
 import           Data.Monoid               ((<>))
@@ -33,7 +34,14 @@ handle ctxt =
   runForm ctxt "add" (stipendForm ctxt) $
     \r ->
       case r of
-        (v, Nothing)     -> renderWith ctxt (formFills v) "index"
+        (v, Nothing)     -> do
+          stipends <- State.Stipend.getAll ctxt
+          let depts = sort $ nub $ map (Stipend.department) stipends
+          let groups = map (\d -> (d, let stips = filter (\s -> Stipend.department s == d) stipends in
+                                      let years = sort $ nub $ map (Stipend.academicYear) stips in
+                                      map (\y -> (y, sortOn Stipend.amount $ filter (\s -> Stipend.academicYear s == y) stips)) years)) depts
+          let ss = [("departments",mapSubs (\(d, grps) -> subs [("department", textFill ((departments ctxt) M.! d)), ("years", mapSubs (\(y,stips) -> subs [("year", textFill (tshow y)), ("stipends", mapSubs (\stip -> subs [("amount", textFill (tshow $ Stipend.amount stip)),("is-verified", if Stipend.sawDocument stip then fillChildren else textFill ""),("not-verified", if Stipend.sawDocument stip then textFill "" else fillChildren)]) stips)]) grps)]) groups)]
+          renderWith ctxt (subs ss <> formFills v) "index"
         (_, Just stipend) -> do
           r <- Handler.Reporter.getReporter ctxt
           Just id' <- State.Stipend.create ctxt (stipend { Stipend.reporterId = Reporter.id r})

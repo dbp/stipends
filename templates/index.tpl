@@ -56,4 +56,23 @@
     
     <dfInputSubmit />
   </dfForm>
+
+  <hr/>
+
+  <departments>
+    <div>
+      <strong><department/></strong><br/>
+      <ul>
+        <years>
+          <li>
+            <year/>:
+            <stipends>
+              <is-verified><strong>$<amount/></strong></is-verified>
+              <not-verified>$<amount/></not-verified>
+            </stipends>
+          </li>
+        </years>
+      </ul>
+    </div>
+  </departments>
 </apply>

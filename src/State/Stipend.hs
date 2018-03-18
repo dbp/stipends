@@ -29,3 +29,9 @@ getByToken ctxt tok = withResource (Context.db ctxt) $ \c -> listToMaybe <$> que
 
 getWithUnverifiedDocuments :: Ctxt -> IO [Stipend]
 getWithUnverifiedDocuments ctxt = withResource (Context.db ctxt) $ \c -> query_ c "SELECT S.id, S.created_at, S.token, S.amount, S.academic_year, S.period, S.summer_guarantee, S.year_in_program, S.department, S.reporter_id, S.saw_document, S.notes FROM stipends as S JOIN documents as D on D.stipend_id = S.id WHERE D.verified_at IS NULL ORDER BY D.created_at DESC"
+
+-- NOTE(dbp 2018-03-18): This will probably become getAllVerified, once we are
+-- verifying every stipend before showing publically (so people can't enter in
+-- a stipend of $1 or $100,000 and mess everything up)
+getAll :: Ctxt -> IO [Stipend]
+getAll ctxt = withResource (Context.db ctxt) $ \c -> query_ c "SELECT id, created_at, token, amount, academic_year, period, summer_guarantee, year_in_program, department, reporter_id, saw_document, notes FROM stipends"

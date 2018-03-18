@@ -13,8 +13,22 @@
    CLOSED: [2018-03-18 Sun 17:11]
 ** DONE Add page for curators to create new reporter accounts.
    CLOSED: [2018-03-18 Sun 17:31]
-** TODO Add public view with aggregate data
+** DONE Add public view with aggregate data
+   CLOSED: [2018-03-18 Sun 18:01]
 ** DONE Add URL busting for CSS files
 ** DONE Add stipend page, redirect there after creation
    CLOSED: [2018-03-17 Sat 17:36]
 
+** TODO Verify every stipend before showing on public page
+   This verification should show every other stipend that the same user has
+   added if they are anon, for our (basic) dup detection.
+** TODO Improve verification UI 
+   right now using only saw_document, so completely ignoring supporting
+   documents, whether this was done by an organizer, etc. Probably we should try
+   to surface some of this subtlety, but at the very least, we shouldn't ignore
+   it altogether.
+** TODO Improve amount UI
+   Right now, it just prints what they put in, ignoring the summer question, or
+   if they gave us non-yearly amounts. For example, if they gave us yearly but
+   they said summer wasn't guaranteed, we should show the 9 month adjusted
+   amount (with some note about the total), as that is the more accurate amount).
