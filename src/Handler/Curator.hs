@@ -39,9 +39,14 @@ import           Web.Larceny               (fillChildren, fillChildrenWith,
 import qualified Web.Larceny               as L
 
 import           Context
+import qualified Handler.Reporter
+import qualified Handler.Stipend
+import qualified State.Stipend
+import qualified State.Types.Reporter      as Reporter
 
 handle :: Ctxt -> IO (Maybe Response)
-handle ctxt = route ctxt [path "authenticate" // param "redirect" ==> authenticateH]
+handle ctxt = route ctxt [path "authenticate" // param "redirect" ==> authenticateH
+                         ,path "review" ==> reviewH ]
 
 authenticateH :: Ctxt -> Int -> IO (Maybe Response)
 authenticateH ctxt id' =
@@ -52,3 +57,12 @@ authenticateH ctxt id' =
             (_, Just key) -> do
               setInSession ctxt "secret_key" (tshow $ (key :: Integer))
               redirect $ "/document/" <> tshow id'
+
+reviewH :: Ctxt -> IO (Maybe Response)
+reviewH ctxt = do
+  mr <- Context.lookupReporter ctxt
+  case mr >>= Reporter.curatorAt of
+    Nothing -> return Nothing
+    Just _ -> do
+      unverified <- State.Stipend.getWithUnverifiedDocuments ctxt
+      renderWith ctxt (subs [("stipends", mapSubs (Handler.Stipend.stipendSubs ctxt) unverified)]) "curator/review"

@@ -12,8 +12,11 @@ import           Context
 import           State.Types.Reporter
 
 
+-- NOTE(dbp 2018-03-18): We need to be able to look this up for a global Fill,
+-- so need it in Context module, but redefine it here for consistency everywhere
+-- else.
 get :: Ctxt -> Int -> IO (Maybe Reporter)
-get ctxt id' = withResource (Context.db ctxt) $ \c -> listToMaybe <$> query c "SELECT id, created_at, fingerprint, token, name, trusted_at, curator_at FROM reporters WHERE id = ?" (Only id')
+get = getReporter
 
 getByToken :: Ctxt -> Text -> IO (Maybe Reporter)
 getByToken ctxt token = withResource (Context.db ctxt) $ \c -> listToMaybe <$> query c "SELECT id, created_at, fingerprint, token, name, trusted_at, curator_at FROM reporters WHERE token = ?" (Only token)

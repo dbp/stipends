@@ -2,25 +2,28 @@
 module Context where
 
 import           Control.Monad              (join)
-import           Control.Monad.Trans        (liftIO)
+import           Control.Monad.Trans        (MonadIO, liftIO)
 import           Data.Map                   (Map)
 import qualified Data.Map                   as M
-import           Data.Maybe                 (fromMaybe)
+import           Data.Maybe                 (fromMaybe, listToMaybe)
 import           Data.Monoid                ((<>))
-import           Data.Pool                  (Pool)
+import           Data.Pool                  (Pool, withResource)
 import           Data.Text                  (Text)
 import qualified Data.Text                  as T
 import           Data.Time.Clock            (UTCTime)
 import           Data.Time.Clock.POSIX      (utcTimeToPOSIXSeconds)
 import           Data.Time.Format           (defaultTimeLocale, formatTime)
 import qualified Data.Vault.Lazy            as Vault
-import           Database.PostgreSQL.Simple (Connection)
+import           Database.PostgreSQL.Simple (Connection, Only (..), query)
 import           Network.Wai                (Request (..), Response)
 import           Network.Wai.Session        (Session)
 import           System.Directory           (getModificationTime)
+import           Text.Read                  (readMaybe)
 import           Web.Fn
 import qualified Web.Larceny                (Fill, Library, Substitutions)
 import qualified Web.Larceny                as L
+
+import           State.Types.Reporter
 
 type Fill = Web.Larceny.Fill ()
 type Library = Web.Larceny.Library ()
@@ -45,15 +48,17 @@ render ctxt = renderWith ctxt mempty
 renderWith :: Ctxt -> Substitutions -> Text -> IO (Maybe Response)
 renderWith ctxt subs tpl =
   do message <- getMessage ctxt
-     t <- L.renderWith (library ctxt) (M.union (builtInSubs message) subs) () (T.splitOn "/" tpl)
+     t <- L.renderWith (library ctxt) (M.union (builtInSubs ctxt message) subs) () (T.splitOn "/" tpl)
      case t of
        Nothing -> return Nothing
        Just t' -> okHtml t'
 
-builtInSubs :: Maybe Text -> Substitutions
-builtInSubs message =
+builtInSubs :: Ctxt -> Maybe Text -> Substitutions
+builtInSubs ctxt message =
   L.subs [("render-message", L.textFill (fromMaybe "" message))
-         ,("css", L.useAttrs (L.a "path") cssFill)]
+         ,("css", L.useAttrs (L.a "path") cssFill)
+         ,("is-curator", isCuratorFill ctxt)
+         ]
 
 dateFill :: UTCTime -> Fill
 dateFill t = L.textFill (T.pack $ formatTime defaultTimeLocale "%Y-%m-%d" t)
@@ -67,6 +72,31 @@ cssFill pth = L.rawTextFill' $ do
   mtime <- liftIO $ getModificationTime (T.unpack $ removeLeadingSlash $ T.replace "/%cache%/" "/" pth)
   return $ "<link rel='stylesheet' href='" <> (T.replace "%cache%" (T.pack $ show (utcTimeToPOSIXSeconds mtime)) pth) <> "'>"
   where removeLeadingSlash t = if "/" `T.isPrefixOf` t then T.drop 1 t else t
+
+reporterKey :: Text
+reporterKey = "reporter_id"
+
+getReporter :: Ctxt -> Int -> IO (Maybe Reporter)
+getReporter ctxt id' = withResource (Context.db ctxt) $ \c -> listToMaybe <$> query c "SELECT id, created_at, fingerprint, token, name, trusted_at, curator_at FROM reporters WHERE id = ?" (Only id')
+
+lookupReporter :: Ctxt -> IO (Maybe Reporter)
+lookupReporter ctxt = do
+  mrid <- (>>= readMaybe . T.unpack) <$> getFromSession ctxt reporterKey
+  case mrid of
+    Just rid -> getReporter ctxt rid
+    Nothing  -> return Nothing
+
+requireCurator :: MonadIO m => Ctxt -> m a -> m a -> m a
+requireCurator ctxt not is =  do
+  mrep <- (>>= curatorAt) <$> (liftIO $ lookupReporter ctxt)
+  case mrep of
+    Nothing -> not
+    Just _  -> is
+
+isCuratorFill :: Ctxt -> Fill
+isCuratorFill ctxt = L.Fill $ \_s (pth, L.Template tpl) l -> do
+  requireCurator ctxt (return "") (tpl pth mempty l)
+
 
 setMessage :: Ctxt -> Text -> IO ()
 setMessage ctxt msg = setInSession ctxt "message" msg

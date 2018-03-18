@@ -6,7 +6,8 @@ import           Control.Logging
 import           Control.Monad.Trans       (liftIO)
 import           Data.List                 (lookup)
 import qualified Data.Map                  as M
-import           Data.Maybe                (fromJust, fromMaybe)
+import           Data.Maybe                (fromJust, fromMaybe, isJust,
+                                            isNothing)
 import           Data.Monoid               ((<>))
 import           Data.Text                 (Text)
 import qualified Data.Text                 as T
@@ -73,6 +74,8 @@ documentsFill ctxt i = L.Fill $ \attrs pt lib -> do
                          ,("file-type", textFill (Document.fileType doc))
                          ,("stipend-id", textFill (tshow (Document.stipendId doc)))
                          ,("verified-at", optionalDateFill (Document.verifiedAt doc))
+                         ,("verified", if isJust (Document.verifiedAt doc) then fillChildren else textFill "")
+                         ,("not-verified", if isNothing (Document.verifiedAt doc) then fillChildren else textFill "")
                          ,("counter", textFill (tshow count))
                          ]) (zip [1..] docs)
   L.unFill fill' attrs pt lib

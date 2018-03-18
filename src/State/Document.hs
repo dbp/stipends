@@ -24,3 +24,7 @@ create ctxt document = withResource (Context.db ctxt) $ \c -> do
   case r of
     Just (Only r) -> return $ Just r
     Nothing       -> return Nothing
+
+update :: Ctxt -> Document -> IO ()
+update ctxt doc =
+  withResource (Context.db ctxt) $ \c -> void $ execute c "UPDATE documents SET object_key = ?, decryption_key = ?, file_type = ?, stipend_id = ?, verified_at = ? where id = ?" (objectKey doc, Binary (decryptionKey doc), fileType doc, stipendId doc, verifiedAt doc, State.Types.Document.id doc)

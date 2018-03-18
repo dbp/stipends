@@ -56,6 +56,7 @@ import qualified State.Types.Stipend       as Stipend
 
 handle :: Ctxt -> IO (Maybe Response)
 handle ctxt = route ctxt [ path "add" // param "stipend" ==> addH
+                         , path "verify" // segment ==> verifyH
                          , segment ==> showH
                          ]
 
@@ -97,9 +98,21 @@ uploadFile ctxt path key = do
   plain <- BS.readFile path
   body <- toBody <$> AES.encrypt key plain
   runResourceT $ runAWS (env & envLogger .~ lgr) $
-        within NorthVirginia $
+        within Northirginia $
             send (putObject (BucketName $ Context.bucket ctxt) (ObjectKey uuid) body)
   return uuid
+
+verifyH :: Ctxt -> Int -> IO (Maybe Response)
+verifyH ctxt id' =
+  requireCurator ctxt (return Nothing) $ do
+    mdoc <- State.get ctxt id'
+    case mdoc of
+      Nothing -> return Nothing
+      Just doc -> do
+        now <- getCurrentTime
+        State.update ctxt (doc { verifiedAt = Just now })
+        redirectReferer ctxt
+
 
 mimeMap :: [(Text,Text)]
 mimeMap =  [
@@ -114,7 +127,7 @@ mimeMap =  [
 
 showH :: Ctxt -> Int -> IO (Maybe Response)
 showH ctxt id' = do
-  mr <- Handler.Reporter.lookupReporter ctxt
+  mr <- Context.lookupReporter ctxt
   case mr of
     Nothing -> bounce
     Just rep ->
