@@ -32,11 +32,12 @@ data Ctxt = Ctxt { request     :: FnRequest
                  , sess        :: Vault.Key (Session IO Text (Maybe Text))
                  , departments :: Map Text Text
                  , bucket      :: Text
+                 , pubkey      :: Integer
                  }
 
 instance RequestContext Ctxt where
-  getRequest (Ctxt r _ _ _ _ _) = r
-  setRequest (Ctxt _ p l s ds b) r = Ctxt r p l s ds b
+  getRequest (Ctxt r _ _ _ _ _ _) = r
+  setRequest (Ctxt _ p l s ds b k) r = Ctxt r p l s ds b k
 
 render :: Ctxt -> Text -> IO (Maybe Response)
 render ctxt = renderWith ctxt mempty

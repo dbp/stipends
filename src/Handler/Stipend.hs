@@ -69,7 +69,7 @@ documentsFill ctxt i = L.Fill $ \attrs pt lib -> do
         mapSubs (\(count, doc) ->
                     subs [("id", textFill (tshow $ Document.id doc))
                          ,("created-at", dateFill (Document.createdAt doc))
-                         ,("url", textFill (Document.url doc))
+                         ,("object-key", textFill (Document.objectKey doc))
                          ,("file-type", textFill (Document.fileType doc))
                          ,("stipend-id", textFill (tshow (Document.stipendId doc)))
                          ,("verified-at", optionalDateFill (Document.verifiedAt doc))

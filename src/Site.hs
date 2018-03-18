@@ -48,6 +48,7 @@ import           Web.Heroku                         (parseDatabaseUrl)
 import qualified Web.Larceny                        as L
 
 import           Context
+import qualified Handler.Curator                    as Curator
 import qualified Handler.Document                   as Document
 import qualified Handler.Home                       as Home
 import qualified Handler.Reporter                   as Reporter
@@ -60,6 +61,7 @@ initializer =
      Just depts <- Yaml.decodeFile "departments.yaml"
      u <- fmap parseDatabaseUrl <$> lookupEnv "DATABASE_URL"
      bucket <- T.pack <$> getEnv "BUCKET_NAME"
+     pubkey <- read <$> getEnv "PUBLIC_KEY"
      let ps = fromMaybe [("host", "localhost")
                         ,("port", "5432")
                         ,("user", "stipends")
@@ -72,7 +74,7 @@ initializer =
 
      session <- Vault.newKey
 
-     return (Ctxt defaultFnRequest pgpool lib session depts bucket)
+     return (Ctxt defaultFnRequest pgpool lib session depts bucket pubkey)
 
 site :: Ctxt -> IO Response
 site ctxt = route ctxt [ path "static" ==> staticServe "static"
@@ -84,6 +86,7 @@ site ctxt = route ctxt [ path "static" ==> staticServe "static"
                        , path "reporter" ==> Reporter.handle
                        , path "stipend" ==> Stipend.handle
                        , path "document" ==> Document.handle
+                       , path "curator" ==> Curator.handle
                        , anything ==> larcenyServe
                        ]
             `fallthrough` do r <- render ctxt "404"

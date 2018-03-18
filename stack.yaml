@@ -17,6 +17,7 @@ extra-deps:
 - html-entities-1.1.4.2
 - logging-3.0.5
 - wai-session-clientsession-0.1
+- crypto-simple-0.1.0.0
 
 
 # - html-entities-1.1.4

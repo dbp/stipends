@@ -5,6 +5,13 @@ module Handler.Document where
 import           Control.Lens
 import           Control.Logging
 import           Control.Monad.Trans       (liftIO)
+import qualified Crypto.PubKey.RSA.PKCS15  as RSA (decrypt, encrypt)
+import qualified Crypto.PubKey.RSA.Types   as RSA
+import           Crypto.Random             (getRandomBytes)
+import qualified Crypto.Simple.CBC         as AES (decrypt, encrypt)
+import           Data.ByteString           (ByteString)
+import qualified Data.ByteString           as BS
+import qualified Data.ByteString.Lazy      as LB
 import           Data.Conduit
 import           Data.Conduit.Binary
 import           Data.List                 (lookup)
@@ -64,23 +71,31 @@ addH ctxt token = do
           case r of
             (v, Nothing)       -> renderWith ctxt (formFills v) "document/add"
             (_, Just file) -> do
-              uuid <- uploadFile ctxt file
-              let filetype = T.pack $ takeExtension (file)
-              State.create ctxt (Document 0 (UTCTime (ModifiedJulianDay 0) 0) uuid filetype (Stipend.id st) Nothing)
-              setMessage ctxt "Added encrypted supporting document (viewable only to the curators). Thanks!"
-              redirect (Handler.Stipend.url st)
+              key <- getRandomBytes 32
+              mdecryption_key <- RSA.encrypt (RSA.PublicKey 64 (pubkey ctxt) 0x10001) key
+              -- NOTE(dbp 2018-03-18): We don't want to make this visible, but
+              -- we can't continue, and we want to trigger a notification, so...
+              case mdecryption_key of
+                Left err -> error $ show err
+                Right decryption_key -> do
+                  uuid <- uploadFile ctxt file key
+                  let filetype = T.pack $ takeExtension (file)
+                  State.create ctxt (Document 0 (UTCTime (ModifiedJulianDay 0) 0) uuid decryption_key filetype (Stipend.id st) Nothing)
+                  setMessage ctxt "Added encrypted supporting document (viewable only to the curators). Thanks!"
+                  redirect (Handler.Stipend.url st)
 
 documentForm :: Ctxt -> Form Text IO FilePath
 documentForm ctxt = "file" .: (validate required Text.Digestive.Form.file)
   where required (Just v) = Success v
         required _        = Error "File is required."
 
-uploadFile :: Ctxt -> FilePath -> IO Text
-uploadFile ctxt path = do
+uploadFile :: Ctxt -> FilePath -> ByteString -> IO Text
+uploadFile ctxt path key = do
   uuid <- UUID.toText <$> UUID.nextRandom
   lgr  <- newLogger Debug stdout
   env  <- newEnv Discover
-  body <- chunkedFile defaultChunkSize path
+  plain <- BS.readFile path
+  body <- toBody <$> AES.encrypt key plain
   runResourceT $ runAWS (env & envLogger .~ lgr) $
         within NorthVirginia $
             send (putObject (BucketName $ Context.bucket ctxt) (ObjectKey uuid) body)
@@ -106,24 +121,36 @@ showH ctxt id' = do
       case Reporter.curatorAt rep of
         Nothing -> bounce
         Just _ -> do
-          mdoc <- State.get ctxt id'
-          case mdoc of
-            Nothing -> do setMessage ctxt "No document found"
-                          redirectReferer ctxt
-            Just doc -> do
-              let content =
-                    case lookup (fileType doc) mimeMap of
-                      Nothing -> []
-                      Just t  -> [("Content-Type", T.encodeUtf8 t)]
-              lgr  <- newLogger Debug stdout
-              env  <- newEnv Discover
-              contents <- runResourceT $ do
-                (RsBody body) <- runAWS (env & envLogger .~ lgr) $
-                  within NorthVirginia $ do
-                    rs <- send (getObject (BucketName $ Context.bucket ctxt) (ObjectKey $ url doc))
-                    return (view gorsBody rs)
-                body $$+- sinkLbs
-              return (Just $ responseLBS status200 content contents)
+          mkey <- (>>= readMaybe . T.unpack) <$> getFromSession ctxt "secret_key"
+          case mkey of
+            Nothing -> do setMessage ctxt "You must provide your decryption key to view documents."
+                          redirect $ "/curator/authenticate?redirect=" <> tshow id'
+            Just priv_key -> do
+              mdoc <- State.get ctxt id'
+              case mdoc of
+                Nothing -> do setMessage ctxt "No document found"
+                              redirectReferer ctxt
+                Just doc -> do
+                  log' $ tshow $ BS.length (decryptionKey doc)
+                  let msym_key = RSA.decrypt Nothing (RSA.PrivateKey (RSA.PublicKey 64 (pubkey ctxt) 0x10001) priv_key 0 0 0 0 0) (decryptionKey doc)
+                  case msym_key of
+                    Left err -> do setMessage ctxt $ "Error decrypting decryption key: " <> tshow err
+                                   redirectReferer ctxt
+                    Right sym_key -> do
+                      let content =
+                            case lookup (fileType doc) mimeMap of
+                              Nothing -> []
+                              Just t  -> [("Content-Type", T.encodeUtf8 t)]
+                      lgr  <- newLogger Debug stdout
+                      env  <- newEnv Discover
+                      contents <- runResourceT $ do
+                        (RsBody body) <- runAWS (env & envLogger .~ lgr) $
+                          within NorthVirginia $ do
+                            rs <- send (getObject (BucketName $ Context.bucket ctxt) (ObjectKey $ objectKey doc))
+                            return (view gorsBody rs)
+                        body $$+- sinkLbs
+                      decrypted <- AES.decrypt sym_key (LB.toStrict contents)
+                      return (Just $ responseLBS status200 content (LB.fromStrict decrypted))
   where bounce = do
          setMessage ctxt "Only curators can view supporting documents."
          redirectReferer ctxt

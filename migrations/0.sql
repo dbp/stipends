@@ -26,7 +26,8 @@ CREATE TABLE stipends (
 CREATE TABLE documents (
     id serial PRIMARY KEY,
     created_at timestamptz NOT NULL DEFAULT now(),
-    url text NOT NULL,
+    object_key text NOT NULL,
+    decryption_key bytea NOT NULL,
     file_type text NOT NULL,
     stipend_id integer NOT NULL references stipends(id),
     verified_at timestamptz
