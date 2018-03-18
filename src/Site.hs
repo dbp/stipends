@@ -36,8 +36,7 @@ import           Network.Wai.Session                (withSession)
 import           Network.Wai.Session.ClientSession  (clientsessionStore)
 import           Rollbar.Item.CodeVersion           (CodeVersion (SHA))
 import           System.Directory                   (listDirectory)
-import           System.Environment                 (lookupEnv)
-import           System.Environment                 (lookupEnv)
+import           System.Environment                 (getEnv, lookupEnv)
 import           System.IO.Unsafe                   (unsafePerformIO)
 import           Text.Digestive.Form
 import           Text.Digestive.Larceny
@@ -49,6 +48,7 @@ import           Web.Heroku                         (parseDatabaseUrl)
 import qualified Web.Larceny                        as L
 
 import           Context
+import qualified Handler.Document                   as Document
 import qualified Handler.Home                       as Home
 import qualified Handler.Reporter                   as Reporter
 import qualified Handler.Stipend                    as Stipend
@@ -59,6 +59,7 @@ initializer =
   do lib <- L.loadTemplates "templates" L.defaultOverrides
      Just depts <- Yaml.decodeFile "departments.yaml"
      u <- fmap parseDatabaseUrl <$> lookupEnv "DATABASE_URL"
+     bucket <- T.pack <$> getEnv "BUCKET_NAME"
      let ps = fromMaybe [("host", "localhost")
                         ,("port", "5432")
                         ,("user", "stipends")
@@ -71,7 +72,7 @@ initializer =
 
      session <- Vault.newKey
 
-     return (Ctxt defaultFnRequest pgpool lib session depts)
+     return (Ctxt defaultFnRequest pgpool lib session depts bucket)
 
 site :: Ctxt -> IO Response
 site ctxt = route ctxt [ path "static" ==> staticServe "static"
@@ -82,6 +83,7 @@ site ctxt = route ctxt [ path "static" ==> staticServe "static"
                        , end ==> Home.handle
                        , path "reporter" ==> Reporter.handle
                        , path "stipend" ==> Stipend.handle
+                       , path "document" ==> Document.handle
                        , anything ==> larcenyServe
                        ]
             `fallthrough` do r <- render ctxt "404"

@@ -5,6 +5,8 @@
 
 module Main where
 
+import qualified Configuration.Dotenv               as Dotenv
+import qualified Configuration.Dotenv.Types         as Dotenv
 import           Control.Logging
 import           Control.Monad
 import           Data.Default                       (def)
@@ -36,8 +38,7 @@ import           Network.Wai.Session                (withSession)
 import           Network.Wai.Session.ClientSession  (clientsessionStore)
 import           Rollbar.Item.CodeVersion           (CodeVersion (SHA))
 import           System.Directory                   (listDirectory)
-import           System.Environment                 (lookupEnv)
-import           System.Environment                 (lookupEnv)
+import           System.Environment                 (getEnv, lookupEnv)
 import           System.IO.Unsafe                   (unsafePerformIO)
 import           Text.Digestive.Form
 import           Text.Digestive.Larceny
@@ -57,6 +58,7 @@ import qualified State.Cache                        as Cache
 main :: IO ()
 main = withStdoutLogging $ do
   setLocaleEncoding utf8
+  Dotenv.loadFile Dotenv.defaultConfig
   ctxt <- initializer
   runMigrations (db ctxt) "migrations"
 

@@ -10,7 +10,9 @@ import           Data.Monoid                ((<>))
 import           Data.Pool                  (Pool)
 import           Data.Text                  (Text)
 import qualified Data.Text                  as T
+import           Data.Time.Clock            (UTCTime)
 import           Data.Time.Clock.POSIX      (utcTimeToPOSIXSeconds)
+import           Data.Time.Format           (defaultTimeLocale, formatTime)
 import qualified Data.Vault.Lazy            as Vault
 import           Database.PostgreSQL.Simple (Connection)
 import           Network.Wai                (Request (..), Response)
@@ -29,11 +31,12 @@ data Ctxt = Ctxt { request     :: FnRequest
                  , library     :: Library
                  , sess        :: Vault.Key (Session IO Text (Maybe Text))
                  , departments :: Map Text Text
+                 , bucket      :: Text
                  }
 
 instance RequestContext Ctxt where
-  getRequest (Ctxt r _ _ _ _) = r
-  setRequest (Ctxt _ p l s ds) r = Ctxt r p l s ds
+  getRequest (Ctxt r _ _ _ _ _) = r
+  setRequest (Ctxt _ p l s ds b) r = Ctxt r p l s ds b
 
 render :: Ctxt -> Text -> IO (Maybe Response)
 render ctxt = renderWith ctxt mempty
@@ -50,6 +53,13 @@ builtInSubs :: Maybe Text -> Substitutions
 builtInSubs message =
   L.subs [("render-message", L.textFill (fromMaybe "" message))
          ,("css", L.useAttrs (L.a "path") cssFill)]
+
+dateFill :: UTCTime -> Fill
+dateFill t = L.textFill (T.pack $ formatTime defaultTimeLocale "%Y-%m-%d" t)
+
+optionalDateFill :: Maybe UTCTime -> Fill
+optionalDateFill (Just t) = dateFill t
+optionalDateFill Nothing  = L.textFill ""
 
 cssFill :: Text -> Fill
 cssFill pth = L.rawTextFill' $ do

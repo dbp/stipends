@@ -43,16 +43,18 @@ loginH ctxt token = do
       setMessage ctxt $ "Successfully logged in as " <> (fromMaybe "" $ name r) <> "."
   redirect "/"
 
+lookupReporter :: Ctxt -> IO (Maybe Reporter)
+lookupReporter ctxt = do
+  mrid <- (>>= readMaybe . T.unpack) <$> getFromSession ctxt "reporter_id"
+  case mrid of
+    Just rid -> State.get ctxt rid
+    Nothing  -> return Nothing
 
 getReporter :: Ctxt -> IO Reporter
 getReporter ctxt = do
-  mrid <- (>>= readMaybe . T.unpack) <$> getFromSession ctxt "reporter_id"
-  case mrid of
-    Just rid -> do
-      mr <- State.get ctxt rid
-      case mr of
-        Just r  -> return r
-        Nothing -> mkR
+  mr <- lookupReporter ctxt
+  case mr of
+    Just r  -> return r
     Nothing -> mkR
   where mkR = do
           let mip = T.decodeUtf8 <$> lookup "X-Forwarded-For" (requestHeaders (fst $ request ctxt))

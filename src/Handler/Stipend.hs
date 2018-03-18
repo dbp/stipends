@@ -21,10 +21,14 @@ import           Text.Digestive.Larceny    (tshow)
 import           Text.Read                 (readMaybe)
 import           Web.Fn
 import           Web.Larceny               (fillChildren, fillChildrenWith,
-                                            mapSubs, subs, textFill)
+                                            fillChildrenWith', mapSubs, subs,
+                                            textFill)
+import qualified Web.Larceny               as L
 
 import           Context
+import qualified State.Document
 import qualified State.Stipend             as State
+import qualified State.Types.Document      as Document
 import           State.Types.Stipend
 
 url :: Stipend -> Text
@@ -44,11 +48,8 @@ showH ctxt tok = do
 stipendSubs :: Ctxt -> Stipend -> Substitutions
 stipendSubs ctxt (Stipend i cr t am acy per sg yr dep reprt saw notes) =
   subs [("id", textFill $ tshow i)
-       ,("created-at",  textFill
-                        (T.pack $ formatTime
-                          defaultTimeLocale
-                          "%Y-%m-%d"
-                          cr))
+       ,("created-at",  dateFill cr)
+       ,("token", textFill t)
         ,("amount", textFill $ "$" <> tshow am)
         ,("academic-year", textFill $ tshow acy <> "-" <> tshow (acy+1))
         ,("period", textFill $ tshowPeriod per)
@@ -58,4 +59,21 @@ stipendSubs ctxt (Stipend i cr t am acy per sg yr dep reprt saw notes) =
         ,("reporter-id", textFill $ tshow reprt)
         ,("saw-document", textFill $ tshow saw)
         ,("notes", textFill notes)
+        ,("documents", documentsFill ctxt i)
         ]
+
+documentsFill :: Ctxt -> Int -> Fill
+documentsFill ctxt i = L.Fill $ \attrs pt lib -> do
+  docs <- liftIO $ State.Document.getForStipend ctxt i
+  let fill' =
+        mapSubs (\(count, doc) ->
+                    subs [("id", textFill (tshow $ Document.id doc))
+                         ,("created-at", dateFill (Document.createdAt doc))
+                         ,("url", textFill (Document.url doc))
+                         ,("file-type", textFill (Document.fileType doc))
+                         ,("stipend-id", textFill (tshow (Document.stipendId doc)))
+                         ,("verified-at", optionalDateFill (Document.verifiedAt doc))
+                         ,("counter", textFill (tshow count))
+                         ]) (zip [1..] docs)
+  L.unFill fill' attrs pt lib
+
