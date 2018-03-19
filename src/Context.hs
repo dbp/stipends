@@ -5,7 +5,8 @@ import           Control.Monad              (join)
 import           Control.Monad.Trans        (MonadIO, liftIO)
 import           Data.Map                   (Map)
 import qualified Data.Map                   as M
-import           Data.Maybe                 (fromMaybe, listToMaybe)
+import           Data.Maybe                 (fromMaybe, isJust, isNothing,
+                                             listToMaybe)
 import           Data.Monoid                ((<>))
 import           Data.Pool                  (Pool, withResource)
 import           Data.Text                  (Text)
@@ -95,6 +96,8 @@ reporterSubs (Reporter i cr f t name trust cur) =
        ,("fingerprint", L.textFill f)
        ,("token", L.textFill t)
        ,("name", L.textFill (fromMaybe "" name))
+       ,("is-trusted", if isJust trust then L.fillChildren else L.textFill "")
+       ,("not-trusted", if isNothing trust then L.fillChildren else L.textFill "")
        ,("trusted-at", optionalDateFill trust)
        ,("curator-at", optionalDateFill cur)
         ]

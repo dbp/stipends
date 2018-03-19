@@ -63,10 +63,12 @@ data Stipend =
              , reporterId    :: Int
              , sawDocument   :: Bool
              , notes         :: Text
+             , verifiedAt    :: Maybe UTCTime
              } deriving (Eq, Show, Read)
 
 instance FromRow Stipend where
   fromRow = Stipend <$> field
+                    <*> field
                     <*> field
                     <*> field
                     <*> field

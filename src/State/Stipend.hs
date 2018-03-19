@@ -64,24 +64,35 @@ verifiedUI ctxt s = do
 
 create :: Ctxt -> Stipend -> IO (Maybe Int)
 create ctxt stipend = withResource (Context.db ctxt) $ \c -> do
-  r <- listToMaybe <$> query c "INSERT INTO stipends (amount, academic_year, period, summer_typical, year_in_program, department, reporter_id, saw_document, notes) VALUES (?,?,?,?,?,?, ?,?,?) RETURNING id" (amount stipend, academicYear stipend, period stipend, summerTypical stipend, yearInProgram stipend, department stipend, reporterId stipend, sawDocument stipend, notes stipend)
+  r <- listToMaybe <$> query c "INSERT INTO stipends (amount, academic_year, period, summer_typical, year_in_program, department, reporter_id, saw_document, notes, verified_at) VALUES (?,?,?,?,?,?,?,?,?,?) RETURNING id" (amount stipend, academicYear stipend, period stipend, summerTypical stipend, yearInProgram stipend, department stipend, reporterId stipend, sawDocument stipend, notes stipend, verifiedAt stipend)
   case r of
     Just (Only r) -> return $ Just r
     Nothing       -> return Nothing
 
 
+-- NOTE(dbp 2018-03-19): postgresql-simple only has ToRow instances up to 10
+-- elements; to get more than that, we combine tuples of size <= 10 with :.
+update :: Ctxt -> Stipend -> IO ()
+update ctxt stip =
+  withResource (Context.db ctxt) $ \c -> void $ execute c "UPDATE stipends SET amount = ?, academic_year = ?, period = ?, summer_typical = ?, year_in_program = ?, department = ?, reporter_id = ?, saw_document = ?, notes = ?, verified_at = ? where id = ?" ((amount stip, academicYear stip, period stip, summerTypical stip, yearInProgram stip, department stip) :. (reporterId stip, sawDocument stip, notes stip, verifiedAt stip, State.Types.Stipend.id stip))
+
+
 get :: Ctxt -> Int -> IO (Maybe Stipend)
-get ctxt id' = withResource (Context.db ctxt) $ \c -> listToMaybe <$> query c "SELECT id, created_at, token, amount, academic_year, period, summer_typical, year_in_program, department, reporter_id, saw_document, notes FROM stipends WHERE id = ?" (Only id')
+get ctxt id' = withResource (Context.db ctxt) $ \c -> listToMaybe <$> query c "SELECT id, created_at, token, amount, academic_year, period, summer_typical, year_in_program, department, reporter_id, saw_document, notes, verified_at FROM stipends WHERE id = ?" (Only id')
 
 getByToken :: Ctxt -> Text -> IO (Maybe Stipend)
-getByToken ctxt tok = withResource (Context.db ctxt) $ \c -> listToMaybe <$> query c "SELECT id, created_at, token, amount, academic_year, period, summer_typical, year_in_program, department, reporter_id, saw_document, notes FROM stipends WHERE token = ?" (Only tok)
+getByToken ctxt tok = withResource (Context.db ctxt) $ \c -> listToMaybe <$> query c "SELECT id, created_at, token, amount, academic_year, period, summer_typical, year_in_program, department, reporter_id, saw_document, notes, verified_at FROM stipends WHERE token = ?" (Only tok)
+
+getByReporter :: Ctxt -> Int -> IO [Stipend]
+getByReporter ctxt id' = withResource (Context.db ctxt) $ \c -> query c "SELECT id, created_at, token, amount, academic_year, period, summer_typical, year_in_program, department, reporter_id, saw_document, notes, verified_at FROM stipends WHERE reporter_id = ?" (Only id')
 
 
 getWithUnverifiedDocuments :: Ctxt -> IO [Stipend]
-getWithUnverifiedDocuments ctxt = withResource (Context.db ctxt) $ \c -> query_ c "SELECT S.id, S.created_at, S.token, S.amount, S.academic_year, S.period, S.summer_typical, S.year_in_program, S.department, S.reporter_id, S.saw_document, S.notes FROM stipends as S JOIN documents as D on D.stipend_id = S.id WHERE D.verified_at IS NULL ORDER BY D.created_at DESC"
+getWithUnverifiedDocuments ctxt = withResource (Context.db ctxt) $ \c -> query_ c "SELECT S.id, S.created_at, S.token, S.amount, S.academic_year, S.period, S.summer_typical, S.year_in_program, S.department, S.reporter_id, S.saw_document, S.notes, S.verified_at FROM stipends as S JOIN documents as D on D.stipend_id = S.id WHERE D.verified_at IS NULL ORDER BY D.created_at DESC"
 
--- NOTE(dbp 2018-03-18): This will probably become getAllVerified, once we are
--- verifying every stipend before showing publically (so people can't enter in
--- a stipend of $1 or $100,000 and mess everything up)
-getAll :: Ctxt -> IO [Stipend]
-getAll ctxt = withResource (Context.db ctxt) $ \c -> query_ c "SELECT id, created_at, token, amount, academic_year, period, summer_typical, year_in_program, department, reporter_id, saw_document, notes FROM stipends"
+getUnverified :: Ctxt -> IO [Stipend]
+getUnverified ctxt = withResource (Context.db ctxt) $ \c -> query_ c "SELECT id, created_at, token, amount, academic_year, period, summer_typical, year_in_program, department, reporter_id, saw_document, notes, verified_at FROM stipends WHERE verified_at IS NULL"
+
+
+getAllVerified :: Ctxt -> IO [Stipend]
+getAllVerified ctxt = withResource (Context.db ctxt) $ \c -> query_ c "SELECT id, created_at, token, amount, academic_year, period, summer_typical, year_in_program, department, reporter_id, saw_document, notes, verified_at FROM stipends WHERE verified_at IS NOT NULL"

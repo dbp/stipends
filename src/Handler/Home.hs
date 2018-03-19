@@ -36,12 +36,15 @@ handle ctxt =
     \r ->
       case r of
         (v, Nothing)     -> do
-          stipends <- State.Stipend.getAll ctxt
+          stipends <- State.Stipend.getAllVerified ctxt
           let groups = groupStipends stipends
           renderWith ctxt (departmentsSubs ctxt groups <> formFills v) "index"
         (_, Just stipend) -> do
           r <- Handler.Reporter.getReporter ctxt
-          Just id' <- State.Stipend.create ctxt (stipend { Stipend.reporterId = Reporter.id r})
+          ver <- case Reporter.trustedAt r of
+                   Nothing -> return Nothing
+                   Just _  -> Just <$> getCurrentTime
+          Just id' <- State.Stipend.create ctxt (stipend { Stipend.reporterId = Reporter.id r, Stipend.verifiedAt = ver})
           Just stipend <- State.Stipend.get ctxt id'
           setMessage ctxt "Submitted a new stipend. Thanks!"
           redirect $ Handler.Stipend.url stipend
@@ -103,3 +106,4 @@ stipendForm ctxt =
   <*> "reporter" .: pure 0
   <*> "saw_document" .: choice [(True, "Yes"), (False, "No")] (Just False)
   <*> "notes" .: text Nothing
+  <*> pure Nothing

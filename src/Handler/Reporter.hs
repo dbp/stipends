@@ -25,12 +25,15 @@ import           Web.Larceny               (fillChildren, fillChildrenWith,
                                             mapSubs, subs, textFill)
 
 import           Context
+import qualified Handler.Stipend
 import qualified State.Reporter            as State
+import qualified State.Stipend
 import           State.Types.Reporter
 
 handle :: Ctxt -> IO (Maybe Response)
 handle ctxt = route ctxt [ path "login" // segment ==> loginH
                          , path "new" ==> newH
+                         , segment // path "stipends" ==> stipendsH
                          ]
 
 loginH :: Ctxt -> Text -> IO (Maybe Response)
@@ -81,3 +84,7 @@ newH ctxt = requireCurator ctxt (return Nothing) $ do
           State.create ctxt (Reporter 0 (UTCTime (ModifiedJulianDay 0) 0) "N/A" "" (Just name) (Just now) Nothing)
           redirect "/curator/organizers"
 
+stipendsH :: Ctxt -> Int -> IO (Maybe Response)
+stipendsH ctxt id' = requireCurator ctxt (return Nothing) $ do
+  stipends <- State.Stipend.getByReporter ctxt id'
+  renderWith ctxt (subs [("stipends", mapSubs (Handler.Stipend.stipendSubs ctxt) stipends)]) "reporter/stipends"

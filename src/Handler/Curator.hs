@@ -48,7 +48,8 @@ import qualified State.Types.Reporter      as Reporter
 handle :: Ctxt -> IO (Maybe Response)
 handle ctxt = route ctxt [path "authenticate" // param "redirect" ==> authenticateH
                          ,path "review" ==> reviewH
-                         ,path "organizers" ==> organizersH]
+                         ,path "organizers" ==> organizersH
+                         ]
 
 authenticateH :: Ctxt -> Int -> IO (Maybe Response)
 authenticateH ctxt id' =
@@ -62,8 +63,10 @@ authenticateH ctxt id' =
 
 reviewH :: Ctxt -> IO (Maybe Response)
 reviewH ctxt = requireCurator ctxt (return Nothing) $ do
-  unverified <- State.Stipend.getWithUnverifiedDocuments ctxt
-  renderWith ctxt (subs [("stipends", mapSubs (Handler.Stipend.stipendSubs ctxt) unverified)]) "curator/review"
+  unverifiedStipends <- State.Stipend.getUnverified ctxt
+  unverifiedDocs <- State.Stipend.getWithUnverifiedDocuments ctxt
+  renderWith ctxt (subs [("stipends", mapSubs (Handler.Stipend.stipendSubs ctxt) unverifiedStipends)
+                        ,("documents", mapSubs (Handler.Stipend.stipendSubs ctxt) unverifiedDocs)]) "curator/review"
 
 organizersH :: Ctxt -> IO (Maybe Response)
 organizersH ctxt = requireCurator ctxt (return Nothing) $ do
