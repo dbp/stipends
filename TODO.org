@@ -40,5 +40,6 @@
    reject other stuff, since otherwise viewing the files will be hard
 ** TODO Set file size limits
    Probably this is important :)
-** TODO Show logged in organizer names somewhere on the page
+** DONE Show logged in organizer names somewhere on the page
+   CLOSED: [2018-03-19 Mon 15:34]
    This way, they know they are logged in. :)

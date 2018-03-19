@@ -69,5 +69,5 @@ organizersH :: Ctxt -> IO (Maybe Response)
 organizersH ctxt = requireCurator ctxt (return Nothing) $ do
   reps <- State.Reporter.getTrusted ctxt
   renderWith ctxt (subs [("reporters",
-                          mapSubs Handler.Reporter.reporterSubs reps)])
+                          mapSubs Context.reporterSubs reps)])
     "curator/organizers"

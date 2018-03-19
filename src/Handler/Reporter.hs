@@ -81,14 +81,3 @@ newH ctxt = requireCurator ctxt (return Nothing) $ do
           State.create ctxt (Reporter 0 (UTCTime (ModifiedJulianDay 0) 0) "N/A" "" (Just name) (Just now) Nothing)
           redirect "/curator/organizers"
 
-
-reporterSubs :: Reporter -> Substitutions
-reporterSubs (Reporter i cr f t name trust cur) =
-  subs [("id", textFill $ tshow i)
-       ,("created-at",  dateFill cr)
-       ,("fingerprint", textFill f)
-       ,("token", textFill t)
-       ,("name", textFill (fromMaybe "" name))
-       ,("trusted-at", optionalDateFill trust)
-       ,("curator-at", optionalDateFill cur)
-        ]

@@ -58,6 +58,7 @@ builtInSubs ctxt message =
   L.subs [("render-message", L.textFill (fromMaybe "" message))
          ,("css", L.useAttrs (L.a "path") cssFill)
          ,("is-curator", isCuratorFill ctxt)
+         ,("is-organizer", isOrganizerFill ctxt)
          ]
 
 dateFill :: UTCTime -> Fill
@@ -86,6 +87,19 @@ lookupReporter ctxt = do
     Just rid -> getReporter ctxt rid
     Nothing  -> return Nothing
 
+
+reporterSubs :: Reporter -> Substitutions
+reporterSubs (Reporter i cr f t name trust cur) =
+  L.subs [("id", L.textFill $ T.pack $ show i)
+       ,("created-at",  dateFill cr)
+       ,("fingerprint", L.textFill f)
+       ,("token", L.textFill t)
+       ,("name", L.textFill (fromMaybe "" name))
+       ,("trusted-at", optionalDateFill trust)
+       ,("curator-at", optionalDateFill cur)
+        ]
+
+
 requireCurator :: MonadIO m => Ctxt -> m a -> m a -> m a
 requireCurator ctxt not is =  do
   mrep <- (>>= curatorAt) <$> (liftIO $ lookupReporter ctxt)
@@ -96,6 +110,17 @@ requireCurator ctxt not is =  do
 isCuratorFill :: Ctxt -> Fill
 isCuratorFill ctxt = L.Fill $ \_s (pth, L.Template tpl) l -> do
   requireCurator ctxt (return "") (tpl pth mempty l)
+
+isOrganizerFill :: Ctxt -> Fill
+isOrganizerFill ctxt = L.Fill $ \attrs pt lib -> do
+  mrep <- liftIO $ lookupReporter ctxt
+  case mrep of
+    Nothing -> return ""
+    Just rep ->
+      case trustedAt rep of
+        Nothing -> return ""
+        Just _ ->
+          L.unFill (L.fillChildrenWith (reporterSubs rep)) attrs pt lib
 
 
 setMessage :: Ctxt -> Text -> IO ()

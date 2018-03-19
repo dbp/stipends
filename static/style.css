@@ -25,3 +25,12 @@ a:hover {
     margin: 5px;
     border: 1px solid #ccc;
 }
+
+.organizer {
+    position: fixed;
+    right: 10px;
+    top: 10px;
+    padding: 3px;
+    background-color: #ae0000;
+    color: white;
+}
