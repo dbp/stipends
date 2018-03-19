@@ -37,7 +37,8 @@ import           Network.Wai.Middleware.Rollbar
 import           Network.Wai.Session                (withSession)
 import           Network.Wai.Session.ClientSession  (clientsessionStore)
 import           Rollbar.Item.CodeVersion           (CodeVersion (SHA))
-import           System.Directory                   (listDirectory)
+import           System.Directory                   (doesFileExist,
+                                                     listDirectory)
 import           System.Environment                 (getEnv, lookupEnv)
 import           System.IO.Unsafe                   (unsafePerformIO)
 import           Text.Digestive.Form
@@ -58,7 +59,8 @@ import qualified State.Cache                        as Cache
 main :: IO ()
 main = withStdoutLogging $ do
   setLocaleEncoding utf8
-  Dotenv.loadFile Dotenv.defaultConfig
+  e <- doesFileExist ".env"
+  when e $ void $ Dotenv.loadFile Dotenv.defaultConfig
   ctxt <- initializer
   runMigrations (db ctxt) "migrations"
 
