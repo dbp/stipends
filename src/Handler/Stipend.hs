@@ -54,7 +54,7 @@ stipendSubs ctxt (Stipend i cr t am acy per sg yr dep reprt saw notes) =
         ,("amount", textFill $ "$" <> tshow am)
         ,("academic-year", textFill $ tshow acy <> "-" <> tshow (acy+1))
         ,("period", textFill $ tshowPeriod per)
-        ,("summer-guarantee", textFill $ tshowSummerGuarantee sg)
+        ,("summer-typical", textFill $ tshowSummerTypical sg)
         ,("year-in-program", textFill $ maybe "N/A" tshow yr)
         ,("department", textFill $ fromMaybe "ERROR CODE D22" $ M.lookup dep (departments ctxt))
         ,("reporter-id", textFill $ tshow reprt)

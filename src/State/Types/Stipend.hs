@@ -11,26 +11,26 @@ import           Database.PostgreSQL.Simple.FromRow
 import           Database.PostgreSQL.Simple.ToField
 import           Database.PostgreSQL.Simple.Types
 
-data SummerGuarantee = FundedYearRound
-                     | FundedAcademic
-                     | FundedUnknown
-                     deriving (Eq, Show, Read)
+data SummerTypical = FundedYearRound
+                   | FundedAcademic
+                   | FundedUnknown
+                   deriving (Eq, Show, Read)
 
-tshowSummerGuarantee :: SummerGuarantee -> Text
-tshowSummerGuarantee FundedYearRound = "yearround"
-tshowSummerGuarantee FundedAcademic  = "academic"
-tshowSummerGuarantee FundedUnknown   = "unknown"
+tshowSummerTypical :: SummerTypical -> Text
+tshowSummerTypical FundedYearRound = "yearround"
+tshowSummerTypical FundedAcademic  = "academic"
+tshowSummerTypical FundedUnknown   = "unknown"
 
 
-instance FromField SummerGuarantee where
+instance FromField SummerTypical where
   fromField f mdata = do r <- fromField f mdata
                          case r :: Text of
                            "yearround" -> return FundedYearRound
                            "academic"  -> return FundedAcademic
                            "unknown"   -> return FundedUnknown
                            _           -> mzero
-instance ToField SummerGuarantee where
-  toField s = toField (tshowSummerGuarantee s)
+instance ToField SummerTypical where
+  toField s = toField (tshowSummerTypical s)
 
 data Period = Yearly | Monthly | BiMonthly deriving (Eq, Show, Read)
 
@@ -51,18 +51,18 @@ instance ToField Period where
 
 
 data Stipend =
-     Stipend { id              :: Int
-             , createdAt       :: UTCTime
-             , token           :: Text
-             , amount          :: Int
-             , academicYear    :: Int
-             , period          :: Period
-             , summerGuarantee :: SummerGuarantee
-             , yearInProgram   :: Maybe Int
-             , department      :: Text
-             , reporterId      :: Int
-             , sawDocument     :: Bool
-             , notes           :: Text
+     Stipend { id            :: Int
+             , createdAt     :: UTCTime
+             , token         :: Text
+             , amount        :: Int
+             , academicYear  :: Int
+             , period        :: Period
+             , summerTypical :: SummerTypical
+             , yearInProgram :: Maybe Int
+             , department    :: Text
+             , reporterId    :: Int
+             , sawDocument   :: Bool
+             , notes         :: Text
              } deriving (Eq, Show, Read)
 
 instance FromRow Stipend where

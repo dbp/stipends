@@ -21,9 +21,9 @@
     </dfLabel>
     <br/>
 
-    <dfLabel ref="summer_guarantee">
-      Is summer funding guaranteed?
-      <dfInputSelect ref="summer_guarantee" />
+    <dfLabel ref="summer_typical">
+      Is summer funding typically provided (or guaranteed)?
+      <dfInputSelect ref="summer_typical" />
     </dfLabel>
     <br/>
 
@@ -67,8 +67,8 @@
           <li>
             <year/>:
             <stipends>
-              <is-verified><strong>$<amount/></strong></is-verified>
-              <not-verified>$<amount/></not-verified>
+              <is-verified><strong><span title="${amount-note}">$<amount/></span></strong></is-verified>
+              <not-verified><span title="${amount-note}">$<amount/></span></not-verified>
             </stipends>
           </li>
         </years>

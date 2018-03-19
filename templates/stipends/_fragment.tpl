@@ -1,6 +1,6 @@
 Created: <created-at/><br/>
 
-Amount: <strong><amount/></strong> (<period/>, <summer-guarantee/>)<br/>
+Amount: <strong><amount/></strong> (<period/>, <summer-typical/>)<br/>
 Academic Year: <academic-year/><br/>
 Year in Program: <year-in-program/><br/>
 Department: <strong><department/></strong><br/><br/>

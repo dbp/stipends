@@ -36,18 +36,43 @@ handle ctxt =
       case r of
         (v, Nothing)     -> do
           stipends <- State.Stipend.getAll ctxt
-          let depts = sort $ nub $ map (Stipend.department) stipends
-          let groups = map (\d -> (d, let stips = filter (\s -> Stipend.department s == d) stipends in
-                                      let years = sort $ nub $ map (Stipend.academicYear) stips in
-                                      map (\y -> (y, sortOn Stipend.amount $ filter (\s -> Stipend.academicYear s == y) stips)) years)) depts
-          let ss = [("departments",mapSubs (\(d, grps) -> subs [("department", textFill ((departments ctxt) M.! d)), ("years", mapSubs (\(y,stips) -> subs [("year", textFill (tshow y)), ("stipends", mapSubs (\stip -> subs [("amount", textFill (tshow $ Stipend.amount stip)),("is-verified", if Stipend.sawDocument stip then fillChildren else textFill ""),("not-verified", if Stipend.sawDocument stip then textFill "" else fillChildren)]) stips)]) grps)]) groups)]
-          renderWith ctxt (subs ss <> formFills v) "index"
+          let groups = groupStipends stipends
+          renderWith ctxt (departmentsSubs ctxt groups <> formFills v) "index"
         (_, Just stipend) -> do
           r <- Handler.Reporter.getReporter ctxt
           Just id' <- State.Stipend.create ctxt (stipend { Stipend.reporterId = Reporter.id r})
           Just stipend <- State.Stipend.get ctxt id'
           setMessage ctxt "Submitted a new stipend. Thanks!"
           redirect $ Handler.Stipend.url stipend
+
+type Department = Text
+type Year = Int
+groupStipends :: [Stipend.Stipend] -> [(Department, [(Year, [Stipend.Stipend])])]
+groupStipends stipends =
+  let depts = sort $ nub $ map (Stipend.department) stipends in
+  map (\d -> (d, let stips = filter (\s -> Stipend.department s == d) stipends in
+                 let years = sort $ nub $ map (Stipend.academicYear) stips in
+                   map (\y -> (y, sortOn Stipend.amount $ filter (\s -> Stipend.academicYear s == y) stips)) years)) depts
+
+departmentsSubs :: Ctxt -> [(Department, [(Year, [Stipend.Stipend])])] -> Context.Substitutions
+departmentsSubs ctxt groups =
+  subs [("departments",
+         mapSubs (\(d, grps) ->
+                     subs [("department", textFill ((departments ctxt) M.! d)),
+                            ("years",
+                              mapSubs (\(y,stips) ->
+                                          subs [("year", textFill (tshow y)),
+                                                 ("stipends",
+                                                   mapSubs (\stip ->
+                                                               subs [("amount", textFill (tshow $ State.Stipend.computeAmount stip))
+                                                                    ,("amount-note", textFill (State.Stipend.computeAmountNote stip))
+                                                                    ,("is-verified", if Stipend.sawDocument stip then fillChildren else textFill "")
+                                                                    ,("not-verified", if Stipend.sawDocument stip then textFill "" else fillChildren)
+                                                                    ])
+                                                   stips)
+                                               ])
+                              grps)])
+          groups)]
 
 stipendForm :: Ctxt -> Form Text IO Stipend.Stipend
 stipendForm ctxt =
@@ -60,8 +85,8 @@ stipendForm ctxt =
   <*> "period" .: choice [(Stipend.Yearly, "Yearly")
                          ,(Stipend.Monthly, "Monthly")
                          ,(Stipend.BiMonthly, "BiMonthly")] Nothing
-  <*> "summer_guarantee" .: choice [(Stipend.FundedAcademic, "Not guaranteed")
-                                   ,(Stipend.FundedYearRound, "Summer guaranteed")
+  <*> "summer_typical" .: choice [(Stipend.FundedAcademic, "Not typical")
+                                   ,(Stipend.FundedYearRound, "Summer funding normally provided")
                                    ,(Stipend.FundedUnknown, "Unknown")] Nothing
   <*> "year_in_program" .: choice ([(Nothing, "")] ++ (map (\yr -> (Just yr, tshow yr <> " year in program")) [1..10])) Nothing
   <*> "department" .: choice (M.assocs (departments ctxt)) Nothing
