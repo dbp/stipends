@@ -20,7 +20,8 @@ import           Text.Digestive.Larceny
 import           Web.Fn
 import           Web.Fn.Extra.Digestive    (runForm)
 import           Web.Larceny               (fillChildren, fillChildrenWith,
-                                            mapSubs, subs, textFill)
+                                            fillChildrenWith', mapSubs, subs,
+                                            textFill)
 
 import           Context
 import qualified Handler.Reporter
@@ -66,6 +67,8 @@ departmentsSubs ctxt groups =
                                                    mapSubs (\stip ->
                                                                subs [("amount", textFill (tshow $ State.Stipend.computeAmount stip))
                                                                     ,("amount-note", textFill (State.Stipend.computeAmountNote stip))
+                                                                    ,("verified", fillChildrenWith' (liftIO $ verifiedSubstitutions ctxt stip)
+                                                                         )
                                                                     ,("is-verified", if Stipend.sawDocument stip then fillChildren else textFill "")
                                                                     ,("not-verified", if Stipend.sawDocument stip then textFill "" else fillChildren)
                                                                     ])
@@ -73,6 +76,13 @@ departmentsSubs ctxt groups =
                                                ])
                               grps)])
           groups)]
+
+verifiedSubstitutions :: Ctxt -> Stipend.Stipend -> IO Context.Substitutions
+verifiedSubstitutions ctxt s = do
+  (note, count, total) <- State.Stipend.verifiedUI ctxt s
+  return $ subs [("note", textFill note)
+                ,("bullets", textFill $ T.concat $ (replicate count "●") ++ (replicate (total - count) "○"))]
+
 
 stipendForm :: Ctxt -> Form Text IO Stipend.Stipend
 stipendForm ctxt =

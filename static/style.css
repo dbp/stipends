@@ -15,3 +15,13 @@ a:hover {
     background-color: #ae0000;
     color: white;
 }
+
+.amount {
+    display: inline-block;
+    width: 75px;
+    height: 50px;
+    vertical-align: top;
+    padding: 5px;
+    margin: 5px;
+    border: 1px solid #ccc;
+}

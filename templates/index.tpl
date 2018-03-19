@@ -67,8 +67,12 @@
           <li>
             <year/>:
             <stipends>
-              <is-verified><strong><span title="${amount-note}">$<amount/></span></strong></is-verified>
-              <not-verified><span title="${amount-note}">$<amount/></span></not-verified>
+              <div class="amount">
+                <span title="${amount-note}">$<amount/></span><br/>
+                <verified>
+                  <span title="${note}"><bullets/></span>
+                </verified>
+              </div>
             </stipends>
           </li>
         </years>

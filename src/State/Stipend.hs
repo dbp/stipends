@@ -11,6 +11,10 @@ import qualified Data.Text                  as T
 import           Database.PostgreSQL.Simple
 
 import           Context
+import qualified State.Document
+import qualified State.Reporter
+import qualified State.Types.Document       as Document
+import qualified State.Types.Reporter       as Reporter
 import           State.Types.Stipend
 
 computeAmount :: Stipend -> Int
@@ -30,6 +34,33 @@ computeAmountNote s = case summerTypical s of
                         FundedYearRound -> ""
                         FundedAcademic -> "Summer funding not typical, so 9 month salary shown. 12 month salary is $" <> T.pack (show (computeYearly s))
                         FundedUnknown -> "Summer funding unknown, so salary may be $" <> T.pack (show (computeYearly s * 3 `div` 4))
+
+verifiedUI :: Ctxt -> Stipend -> IO (Text, Int, Int)
+verifiedUI ctxt s = do
+  let sawdoc = if sawDocument s then 1 else 0
+  mr <- State.Reporter.get ctxt (reporterId s)
+  let organizer = case mr >>= Reporter.trustedAt of
+                    Nothing -> 0
+                    Just _  -> 1
+  ds <- State.Document.getForStipend ctxt (State.Types.Stipend.id s)
+  let docs = case filter (\d -> isJust $ Document.verifiedAt d) ds of
+               [] -> 0
+               _  -> 1
+  let count = sawdoc + organizer + docs
+  let total = 3
+  let message = case docs of
+                  1 -> "Verified by supporting encrypted documents"
+                  0 -> case organizer of
+                         0 -> "Reported anonymously"
+                         _ -> case count of
+                                -- NOTE(dbp 2018-03-19): 0 & 3 shouldn't be able to
+                                -- happen based on control flow above, but leaving it here in case this gets
+                                -- reorganized (partiality isn't good).
+                                0 -> "Unverified"
+                                1 -> "Reported to an organizer"
+                                2 -> "Documents seen by an organizer"
+                                3 -> "Verified by encrypted documents"
+  return (message, count, total)
 
 create :: Ctxt -> Stipend -> IO (Maybe Int)
 create ctxt stipend = withResource (Context.db ctxt) $ \c -> do

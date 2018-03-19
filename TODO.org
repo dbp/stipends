@@ -22,7 +22,8 @@
 ** TODO Verify every stipend before showing on public page
    This verification should show every other stipend that the same user has
    added if they are anon, for our (basic) dup detection.
-** TODO Improve verification UI 
+** DONE Improve verification UI 
+   CLOSED: [2018-03-19 Mon 15:22]
    right now using only saw_document, so completely ignoring supporting
    documents, whether this was done by an organizer, etc. Probably we should try
    to surface some of this subtlety, but at the very least, we shouldn't ignore
@@ -39,3 +40,5 @@
    reject other stuff, since otherwise viewing the files will be hard
 ** TODO Set file size limits
    Probably this is important :)
+** TODO Show logged in organizer names somewhere on the page
+   This way, they know they are logged in. :)
