@@ -4,7 +4,7 @@ module State.Document where
 
 import           Control.Lens
 
-import           Control.Monad              (void)
+import           Control.Monad              (void, when)
 import           Data.Maybe
 import           Data.Pool
 import           Data.Text                  (Text)
@@ -38,10 +38,12 @@ update ctxt doc =
 deleteByStipend :: Ctxt -> Int -> IO ()
 deleteByStipend ctxt id' = do
   docs <- getForStipend ctxt id'
-  let keys = map (objectIdentifier . ObjectKey . objectKey) docs
-  lgr  <- newLogger Debug stdout
-  env  <- newEnv Discover
-  runResourceT $ runAWS (env & envLogger .~ lgr) $
-    within NorthVirginia $
-    send (deleteObjects (BucketName $ Context.bucket ctxt) (delete' & dObjects .~ keys))
+  when (length docs /= 0) $ do
+    let keys = map (objectIdentifier . ObjectKey . objectKey) docs
+    lgr  <- newLogger Debug stdout
+    env  <- newEnv Discover
+    runResourceT $ runAWS (env & envLogger .~ lgr) $
+      within NorthVirginia $
+      send (deleteObjects (BucketName $ Context.bucket ctxt) (delete' & dObjects .~ keys))
+    return ()
   withResource (Context.db ctxt) $ \c -> void $ execute c "DELETE FROM documents WHERE stipend_id = ?" (Only id')

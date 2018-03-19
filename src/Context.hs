@@ -63,7 +63,7 @@ builtInSubs ctxt message =
          ]
 
 dateFill :: UTCTime -> Fill
-dateFill t = L.textFill (T.pack $ formatTime defaultTimeLocale "%Y-%m-%d" t)
+dateFill t = L.textFill (T.pack $ formatTime defaultTimeLocale "%Y-%m-%d %r UTC" t)
 
 optionalDateFill :: Maybe UTCTime -> Fill
 optionalDateFill (Just t) = dateFill t

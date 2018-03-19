@@ -46,3 +46,7 @@
    This way, they know they are logged in. :)
 ** DONE Curators should be able to delete or unverify stipends
    CLOSED: [2018-03-19 Mon 16:43]
+** DONE Show time that stipends are submitted
+   CLOSED: [2018-03-19 Mon 17:44]
+** DONE When deleting, don't try to make API call if no documents
+   CLOSED: [2018-03-19 Mon 17:44]
