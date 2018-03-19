@@ -9,7 +9,7 @@ Notes: <notes/>
 <br/><br/>
 Supporting documents:<br/>
 <documents>
-  <a href="/document/${id}">Document #<counter/></a>
+  <a href="/document/${id}" target="_blank">Document #<counter/></a>
   <verified>
     Verified on <strong><verified-at/></strong>
   </verified>
