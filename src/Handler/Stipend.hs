@@ -37,7 +37,8 @@ url :: Stipend -> Text
 url stipend = "/stipend/" <> token stipend
 
 handle :: Ctxt -> IO (Maybe Response)
-handle ctxt = route ctxt [ path "verify" // segment ==> verifyH
+handle ctxt = route ctxt [ segment // path "verify" ==> verifyH
+                         , segment // path "delete" ==> deleteH
                          , segment ==> showH ]
 
 verifyH :: Ctxt -> Int -> IO (Maybe Response)
@@ -50,6 +51,12 @@ verifyH ctxt id' =
         now <- getCurrentTime
         State.update ctxt (stip { verifiedAt = Just now })
         redirectReferer ctxt
+
+deleteH :: Ctxt -> Int -> IO (Maybe Response)
+deleteH ctxt id' =
+  requireCurator ctxt (return Nothing) $ do
+    State.delete ctxt id'
+    redirectReferer ctxt
 
 
 showH :: Ctxt -> Text -> IO (Maybe Response)

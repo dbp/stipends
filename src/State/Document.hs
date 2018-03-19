@@ -2,11 +2,17 @@
 
 module State.Document where
 
+import           Control.Lens
+
 import           Control.Monad              (void)
 import           Data.Maybe
 import           Data.Pool
 import           Data.Text                  (Text)
 import           Database.PostgreSQL.Simple
+import           Network.AWS                hiding (Document, Error, Response)
+import           Network.AWS.Data.Body
+import           Network.AWS.S3             hiding (redirect)
+import           System.IO
 
 import           Context
 import           State.Types.Document
@@ -28,3 +34,14 @@ create ctxt document = withResource (Context.db ctxt) $ \c -> do
 update :: Ctxt -> Document -> IO ()
 update ctxt doc =
   withResource (Context.db ctxt) $ \c -> void $ execute c "UPDATE documents SET object_key = ?, decryption_key = ?, file_type = ?, stipend_id = ?, verified_at = ? where id = ?" (objectKey doc, Binary (decryptionKey doc), fileType doc, stipendId doc, verifiedAt doc, State.Types.Document.id doc)
+
+deleteByStipend :: Ctxt -> Int -> IO ()
+deleteByStipend ctxt id' = do
+  docs <- getForStipend ctxt id'
+  let keys = map (objectIdentifier . ObjectKey . objectKey) docs
+  lgr  <- newLogger Debug stdout
+  env  <- newEnv Discover
+  runResourceT $ runAWS (env & envLogger .~ lgr) $
+    within NorthVirginia $
+    send (deleteObjects (BucketName $ Context.bucket ctxt) (delete' & dObjects .~ keys))
+  withResource (Context.db ctxt) $ \c -> void $ execute c "DELETE FROM documents WHERE stipend_id = ?" (Only id')

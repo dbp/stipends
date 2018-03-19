@@ -8,7 +8,7 @@ Department: <strong><department/></strong><br/>
 <not-verified>
   <is-curator>
     <br/>
-    Not verified: <a href="/stipend/verify/${id}">verify</a><br/>
+    Not verified: <a href="/stipend/${id}/verify">verify</a><br/>
     Reported by:
     <reporter>
       <is-trusted>
@@ -19,6 +19,7 @@ Department: <strong><department/></strong><br/>
       </not-trusted>
     </reporter>
     <br/>
+    <a href="/stipend/${id}/delete" onclick="return confirm('Are you sure?');">Delete this stipend</a><br/> 
   </is-curator>
 </not-verified>
 
@@ -34,7 +35,7 @@ Supporting documents:<br/>
   </verified>
   <not-verified>
     <is-curator>
-      <a href="/document/verify/${id}">verify</a>
+      <a href="/document/${id}/verify">verify</a>
     </is-curator>
   </not-verified>
   <br/>

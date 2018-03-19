@@ -96,3 +96,8 @@ getUnverified ctxt = withResource (Context.db ctxt) $ \c -> query_ c "SELECT id,
 
 getAllVerified :: Ctxt -> IO [Stipend]
 getAllVerified ctxt = withResource (Context.db ctxt) $ \c -> query_ c "SELECT id, created_at, token, amount, academic_year, period, summer_typical, year_in_program, department, reporter_id, saw_document, notes, verified_at FROM stipends WHERE verified_at IS NOT NULL"
+
+delete :: Ctxt -> Int -> IO ()
+delete ctxt id' = do
+  State.Document.deleteByStipend ctxt id'
+  withResource (Context.db ctxt) $ \c -> void $ execute c "DELETE FROM stipends WHERE id = ?" (Only id')

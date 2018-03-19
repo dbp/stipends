@@ -56,7 +56,7 @@ import qualified State.Types.Stipend       as Stipend
 
 handle :: Ctxt -> IO (Maybe Response)
 handle ctxt = route ctxt [ path "add" // param "stipend" ==> addH
-                         , path "verify" // segment ==> verifyH
+                         , segment // path "verify" ==> verifyH
                          , segment ==> showH
                          ]
 

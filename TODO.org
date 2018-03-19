@@ -44,4 +44,5 @@
 ** DONE Show logged in organizer names somewhere on the page
    CLOSED: [2018-03-19 Mon 15:34]
    This way, they know they are logged in. :)
-** TODO Curators should be able to delete or unverify stipends
+** DONE Curators should be able to delete or unverify stipends
+   CLOSED: [2018-03-19 Mon 16:43]
