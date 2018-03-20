@@ -50,3 +50,5 @@
    CLOSED: [2018-03-19 Mon 17:44]
 ** DONE When deleting, don't try to make API call if no documents
    CLOSED: [2018-03-19 Mon 17:44]
+** DONE Show length of time that stipend is for on front.
+   CLOSED: [2018-03-19 Mon 21:44]

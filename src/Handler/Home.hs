@@ -74,6 +74,7 @@ departmentsSubs ctxt groups =
                                                                          )
                                                                     ,("is-verified", if Stipend.sawDocument stip then fillChildren else textFill "")
                                                                     ,("not-verified", if Stipend.sawDocument stip then textFill "" else fillChildren)
+                                                                    ,("length-paid", textFill $ if Stipend.summerTypical stip == Stipend.FundedAcademic then "9mo" else "12mo")
                                                                     ])
                                                    stips)
                                                ])

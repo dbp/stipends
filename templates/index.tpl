@@ -68,9 +68,9 @@
             <year/>:
             <stipends>
               <div class="amount">
-                <span title="${amount-note}">$<amount/></span><br/>
+                <span title="${amount-note}">$<amount/> (<length-paid/>)</span><br/>
                 <verified>
-                  <span title="${note}"><bullets/></span>
+                  <span title="${note}">trusted: <bullets/></span>
                 </verified>
               </div>
             </stipends>
