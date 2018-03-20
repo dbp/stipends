@@ -1,5 +1,10 @@
+<bind tag="is-home">sel</bind>
+<bind tag="is-about"></bind>
+<bind tag="is-who"></bind>
 <apply template="_base">
 
+  <h2>Add a stipend (will be reviewed before publishing)</h2>
+  
   <dfForm>
     <dfChildErrorList ref=""/>
 
@@ -57,7 +62,7 @@
     <dfInputSubmit />
   </dfForm>
 
-  <hr/>
+  <h2>All public data</h2>
 
   <departments>
     <div>
