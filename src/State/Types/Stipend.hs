@@ -32,20 +32,31 @@ instance FromField SummerTypical where
 instance ToField SummerTypical where
   toField s = toField (tshowSummerTypical s)
 
-data Period = Yearly | Monthly | BiMonthly deriving (Eq, Show, Read)
+data Period = Yearly | TwoSemester | Semester | Monthly | BiMonthly deriving (Eq, Show, Read)
 
 tshowPeriod :: Period -> Text
-tshowPeriod Yearly    = "yearly"
-tshowPeriod Monthly   = "monthly"
-tshowPeriod BiMonthly = "bimonthly"
+tshowPeriod Yearly      = "yearly"
+tshowPeriod TwoSemester = "twosemester"
+tshowPeriod Semester    = "semester"
+tshowPeriod Monthly     = "monthly"
+tshowPeriod BiMonthly   = "bimonthly"
+
+prettyPeriod :: Period -> Text
+prettyPeriod Yearly      = "yearly"
+prettyPeriod TwoSemester = "two semester"
+prettyPeriod Semester    = "semester"
+prettyPeriod Monthly     = "monthly"
+prettyPeriod BiMonthly   = "bi-monthly"
 
 instance FromField Period where
   fromField f mdata = do r <- fromField f mdata
                          case r :: Text of
-                           "yearly"    -> return Yearly
-                           "monthly"   -> return Monthly
-                           "bimonthly" -> return BiMonthly
-                           _           -> mzero
+                           "yearly"      -> return Yearly
+                           "twosemester" -> return TwoSemester
+                           "semester"    -> return Semester
+                           "monthly"     -> return Monthly
+                           "bimonthly"   -> return BiMonthly
+                           _             -> mzero
 instance ToField Period where
   toField p = toField (tshowPeriod p)
 

@@ -74,7 +74,7 @@ departmentsSubs ctxt groups =
                                                                          )
                                                                     ,("is-verified", if Stipend.sawDocument stip then fillChildren else textFill "")
                                                                     ,("not-verified", if Stipend.sawDocument stip then textFill "" else fillChildren)
-                                                                    ,("length-paid", textFill $ if Stipend.summerTypical stip == Stipend.FundedAcademic then "9mo" else "12mo")
+                                                                    ,("length-paid", textFill $ State.Stipend.periodShort stip)
                                                                     ])
                                                    stips)
                                                ])
@@ -97,6 +97,8 @@ stipendForm ctxt =
   <*> "amount" .: stringRead "Must be a number (without commas or $), like 25400" Nothing
   <*> "academic_year" .: choice (map (\yr -> (yr, tshow yr <> "-" <> tshow (yr+1))) [2013..2019]) Nothing
   <*> "period" .: choice [(Stipend.Yearly, "Yearly")
+                         ,(Stipend.TwoSemester, "Two semesters (academic year)")
+                         ,(Stipend.Semester, "One semester")
                          ,(Stipend.Monthly, "Monthly")
                          ,(Stipend.BiMonthly, "BiMonthly")] Nothing
   <*> "summer_typical" .: choice [(Stipend.FundedAcademic, "Not typical")

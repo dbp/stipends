@@ -20,20 +20,33 @@ import           State.Types.Stipend
 computeAmount :: Stipend -> Int
 computeAmount s = case summerTypical s of
                     FundedYearRound -> computeYearly s
-                    FundedAcademic  -> (computeYearly s * 3) `div` 4
-                    FundedUnknown   -> computeYearly s
+                    FundedAcademic  -> computeYearly s * 2 `div` 3
+                    FundedUnknown   -> amount s
 
 computeYearly :: Stipend -> Int
 computeYearly s = case period s of
-                    Yearly    -> amount s
-                    Monthly   -> amount s * 12
-                    BiMonthly -> amount s * 24
+                    Yearly      -> amount s
+                    TwoSemester -> amount s * 3 `div` 2
+                    Semester    -> amount s * 3
+                    Monthly     -> amount s * 12
+                    BiMonthly   -> amount s * 24
 
 computeAmountNote :: Stipend -> Text
 computeAmountNote s = case summerTypical s of
                         FundedYearRound -> ""
-                        FundedAcademic -> "Summer funding not typical, so 9 month salary shown. 12 month salary is $" <> T.pack (show (computeYearly s))
-                        FundedUnknown -> "Summer funding unknown, so salary may be $" <> T.pack (show (computeYearly s * 3 `div` 4))
+                        FundedAcademic -> "Summer funding not typical, so 8 month salary shown."
+                        FundedUnknown -> "Unknown summer funding status, so " <> prettyPeriod (period s) <> " salary shown"
+
+periodShort :: Stipend -> Text
+periodShort s = case summerTypical s of
+                  FundedAcademic -> "8mo"
+                  FundedYearRound -> "12mo"
+                  FundedUnknown -> case period s of
+                                     Yearly      -> "12mo"
+                                     TwoSemester -> "8mo"
+                                     Semester    -> "4mo"
+                                     Monthly     -> "1mo"
+                                     BiMonthly   -> "0.5mo"
 
 verifiedUI :: Ctxt -> Stipend -> IO (Text, Int, Int)
 verifiedUI ctxt s = do
