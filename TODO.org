@@ -52,3 +52,6 @@
    CLOSED: [2018-03-19 Mon 17:44]
 ** DONE Show length of time that stipend is for on front.
    CLOSED: [2018-03-19 Mon 21:44]
+** TODO Email when new stipends come in
+   At least at the beginning (and maybe always), we'll want to be approving
+   stuff as soon as possible, and notifying is cheap & easy.
