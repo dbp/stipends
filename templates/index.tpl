@@ -8,8 +8,8 @@
       <dfInput ref="amount" />
     </dfLabel>
     <dfLabel ref="period">
-      for this period of time
-      <dfInputSelect ref="period" />
+      as a 
+      <dfInputSelect ref="period" /> stipend
     </dfLabel>
     <br/>
 
