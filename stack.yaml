@@ -11,6 +11,10 @@ packages:
   extra-dep: true
   subdirs:
   - fn
+- location:
+    git: https://github.com/positiondev/hspec-fn
+    commit: cf0607b5406ddf884dadf533c546377958cc35e8
+  extra-dep: true
 extra-deps:
 - digestive-functors-0.8.3.0
 - heroku-0.1.2.3

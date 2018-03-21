@@ -66,7 +66,7 @@ initializer =
                         ,("port", "5432")
                         ,("user", "stipends")
                         ,("password", "111")
-                        ,("dbname", "stipends")]
+                        ,("dbname", "stipends_devel")]
               u
      pgpool <- createPool (connectPostgreSQL $ T.encodeUtf8 $ T.intercalate " " $ map (\(k,v) -> k <> "=" <> v) ps)
                         close 1 60 20

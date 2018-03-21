@@ -18,6 +18,7 @@ executable stipends
   main-is:             Main.hs
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   other-modules:       Context
+                       Migrations
                        Site
                        State.Cache
                        Handler.Home
@@ -75,6 +76,71 @@ executable stipends
                      , crypto-simple
   default-language:    Haskell2010
 
+Test-Suite test-stipends
+  type:            exitcode-stdio-1.0
+  hs-source-dirs:  spec src
+  main-is:         Spec.hs
+  other-modules:       Context
+                       Migrations
+                       Site
+                       State.Cache
+                       Handler.Home
+                       Handler.Reporter
+                       Handler.Stipend
+                       Handler.Document
+                       Handler.Curator
+                       State.Reporter
+                       State.Stipend
+                       Types.Reporter
+                       Types.Stipend
+                       State.Document
+                       Types.Document
+                       Text.Digestive.Larceny
+                       Web.Fn.Extra.Digestive
+  build-depends: base
+               , fn
+               , larceny
+               , logging
+               , text
+               , containers
+               , wai
+               , warp
+               , digestive-functors
+               , mtl
+               , lucid
+               , resourcet
+               , http-types
+               , bytestring
+               , wai-extra
+               , directory
+               , filepath
+               , postgresql-simple
+               , resource-pool
+               , heroku
+               , time
+               , wai-middleware-rollbar
+               , vault
+               , clientsession
+               , data-default
+               , cereal-text
+               , wai-session
+               , wai-session-clientsession
+               , cookie
+               , yaml
+               , dotenv
+               , amazonka
+               , amazonka-core
+               , amazonka-s3
+               , lens
+               , uuid
+               , conduit
+               , conduit-extra
+               , cryptonite
+               , crypto-simple
+               , hspec
+               , hspec-fn
+  default-language:    Haskell2010
+       
 source-repository head
   type:     git
   location: https://github.com/dbp/stipends

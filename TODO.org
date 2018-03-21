@@ -55,3 +55,6 @@
 ** TODO Email when new stipends come in
    At least at the beginning (and maybe always), we'll want to be approving
    stuff as soon as possible, and notifying is cheap & easy.
+** TODO Add some automated tests
+** TODO Add footer w/ open source link
+** TODO Longer RSA keys (512bit too weak)

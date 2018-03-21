@@ -53,7 +53,7 @@ import qualified Web.Larceny                        as L
 import           Context
 import           Site
 import qualified State.Cache                        as Cache
-
+import Migrations
 
 
 main :: IO ()
@@ -82,20 +82,4 @@ main = withStdoutLogging $ do
              Right k -> return k
              Left _  -> newkey
   let store = clientsessionStore k
-
-
   run port $ rb $ (withSession store "_session" def {setCookiePath = Just "/"} (sess ctxt) (toWAI ctxt site))
-
-
-runMigrations :: Pool Connection -> FilePath -> IO ()
-runMigrations pgpool dir = do
-  withResource pgpool $ \conn -> void $ execute_ conn "CREATE TABLE IF NOT EXISTS migrations (name TEXT NOT NULL PRIMARY KEY, created_at timestamptz NOT NULL DEFAULT now())"
-  migrations <- sort <$> listDirectory dir
-  forM_ migrations $ \m ->
-    withResource pgpool $ \conn -> do
-      (res :: [(Only Text)]) <- query conn "SELECT name FROM migrations WHERE name = ?" (Only m)
-      when (length res == 0) $ do
-        log' $ "Running migration " <> tshow m
-        sql <- readFile (dir <> "/" <> m)
-        void $ execute_ conn (fromString sql)
-        void $ execute conn "INSERT INTO migrations (name) VALUES (?)" (Only m)
