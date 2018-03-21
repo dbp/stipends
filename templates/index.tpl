@@ -65,11 +65,11 @@
   <h2>All public data</h2>
 
   <departments>
-    <div>
+    <div class="department">
       <strong><department/></strong><br/>
       <ul>
         <years>
-          <li>
+          <li class="year">
             <year/>:
             <stipends>
               <div class="amount">

@@ -75,6 +75,9 @@ verifiedUI ctxt s = do
                                 3 -> "Verified by encrypted documents"
   return (message, count, total)
 
+count :: Ctxt -> IO Int
+count ctxt = withResource (Context.db ctxt) $ \c -> fromOnly . head <$> query_ c "SELECT count(*) FROM stipends"
+
 create :: Ctxt -> Stipend -> IO (Maybe Int)
 create ctxt stipend = withResource (Context.db ctxt) $ \c -> do
   r <- listToMaybe <$> query c "INSERT INTO stipends (amount, academic_year, period, summer_typical, year_in_program, department, reporter_id, saw_document, notes, verified_at) VALUES (?,?,?,?,?,?,?,?,?,?) RETURNING id" (amount stipend, academicYear stipend, period stipend, summerTypical stipend, yearInProgram stipend, department stipend, reporterId stipend, sawDocument stipend, notes stipend, verifiedAt stipend)

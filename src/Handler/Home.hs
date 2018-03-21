@@ -106,7 +106,7 @@ stipendForm ctxt =
                                    ,(Stipend.FundedUnknown, "Unknown")] Nothing
   <*> "year_in_program" .: choice ([(Nothing, "")] ++ (map (\yr -> (Just yr, tshow yr <> " year in program")) [1..10])) Nothing
   <*> "department" .: choice (M.assocs (departments ctxt)) Nothing
-  <*> "reporter" .: pure 0
+  <*> pure 0
   <*> "saw_document" .: choice [(True, "Yes"), (False, "No")] (Just False)
   <*> "notes" .: text Nothing
   <*> pure Nothing
