@@ -27,10 +27,10 @@ executable stipends
                        Handler.Curator
                        State.Reporter
                        State.Stipend
-                       State.Types.Reporter
-                       State.Types.Stipend
+                       Types.Reporter
+                       Types.Stipend
                        State.Document
-                       State.Types.Document
+                       Types.Document
                        Text.Digestive.Larceny
                        Web.Fn.Extra.Digestive
   build-depends:       base >= 4.7 && < 5

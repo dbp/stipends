@@ -1,4 +1,4 @@
-module State.Types.Reporter where
+module Types.Reporter where
 
 import           Data.Text                          (Text)
 import           Data.Time.Clock

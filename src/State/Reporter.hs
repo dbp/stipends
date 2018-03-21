@@ -9,7 +9,7 @@ import           Data.Text                  (Text)
 import           Database.PostgreSQL.Simple
 
 import           Context
-import           State.Types.Reporter
+import           Types.Reporter
 
 
 -- NOTE(dbp 2018-03-18): We need to be able to look this up for a global Fill,

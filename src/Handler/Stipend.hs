@@ -30,8 +30,8 @@ import           Context
 import qualified State.Document
 import qualified State.Reporter
 import qualified State.Stipend             as State
-import qualified State.Types.Document      as Document
-import           State.Types.Stipend
+import qualified Types.Document            as Document
+import           Types.Stipend
 
 url :: Stipend -> Text
 url stipend = "/stipend/" <> token stipend

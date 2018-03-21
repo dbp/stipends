@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-module State.Types.Stipend where
+module Types.Stipend where
 
 import           Control.Monad                        (mzero)
 import           Data.Text                            (Text)

@@ -1,4 +1,4 @@
-module State.Types.Document where
+module Types.Document where
 
 import           Data.ByteString                    (ByteString)
 import           Data.Text                          (Text)

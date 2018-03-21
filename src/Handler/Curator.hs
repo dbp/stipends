@@ -43,7 +43,7 @@ import qualified Handler.Reporter
 import qualified Handler.Stipend
 import qualified State.Reporter
 import qualified State.Stipend
-import qualified State.Types.Reporter      as Reporter
+import qualified Types.Reporter            as Reporter
 
 handle :: Ctxt -> IO (Maybe Response)
 handle ctxt = route ctxt [path "authenticate" // param "redirect" ==> authenticateH

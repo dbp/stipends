@@ -13,9 +13,9 @@ import           Database.PostgreSQL.Simple
 import           Context
 import qualified State.Document
 import qualified State.Reporter
-import qualified State.Types.Document       as Document
-import qualified State.Types.Reporter       as Reporter
-import           State.Types.Stipend
+import qualified Types.Document             as Document
+import qualified Types.Reporter             as Reporter
+import           Types.Stipend
 
 computeAmount :: Stipend -> Int
 computeAmount s = case summerTypical s of
@@ -55,7 +55,7 @@ verifiedUI ctxt s = do
   let organizer = case mr >>= Reporter.trustedAt of
                     Nothing -> 0
                     Just _  -> 1
-  ds <- State.Document.getForStipend ctxt (State.Types.Stipend.id s)
+  ds <- State.Document.getForStipend ctxt (Types.Stipend.id s)
   let docs = case filter (\d -> isJust $ Document.verifiedAt d) ds of
                [] -> 0
                _  -> 1
@@ -87,7 +87,7 @@ create ctxt stipend = withResource (Context.db ctxt) $ \c -> do
 -- elements; to get more than that, we combine tuples of size <= 10 with :.
 update :: Ctxt -> Stipend -> IO ()
 update ctxt stip =
-  withResource (Context.db ctxt) $ \c -> void $ execute c "UPDATE stipends SET amount = ?, academic_year = ?, period = ?, summer_typical = ?, year_in_program = ?, department = ?, reporter_id = ?, saw_document = ?, notes = ?, verified_at = ? where id = ?" ((amount stip, academicYear stip, period stip, summerTypical stip, yearInProgram stip, department stip) :. (reporterId stip, sawDocument stip, notes stip, verifiedAt stip, State.Types.Stipend.id stip))
+  withResource (Context.db ctxt) $ \c -> void $ execute c "UPDATE stipends SET amount = ?, academic_year = ?, period = ?, summer_typical = ?, year_in_program = ?, department = ?, reporter_id = ?, saw_document = ?, notes = ?, verified_at = ? where id = ?" ((amount stip, academicYear stip, period stip, summerTypical stip, yearInProgram stip, department stip) :. (reporterId stip, sawDocument stip, notes stip, verifiedAt stip, Types.Stipend.id stip))
 
 
 get :: Ctxt -> Int -> IO (Maybe Stipend)

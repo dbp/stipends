@@ -50,9 +50,9 @@ import qualified Handler.Reporter
 import qualified Handler.Stipend
 import qualified State.Document            as State
 import qualified State.Stipend
-import           State.Types.Document
-import qualified State.Types.Reporter      as Reporter
-import qualified State.Types.Stipend       as Stipend
+import           Types.Document
+import qualified Types.Reporter            as Reporter
+import qualified Types.Stipend             as Stipend
 
 handle :: Ctxt -> IO (Maybe Response)
 handle ctxt = route ctxt [ path "add" // param "stipend" ==> addH

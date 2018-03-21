@@ -15,7 +15,7 @@ import           Network.AWS.S3             hiding (redirect)
 import           System.IO
 
 import           Context
-import           State.Types.Document
+import           Types.Document
 
 
 get :: Ctxt -> Int -> IO (Maybe Document)
@@ -33,7 +33,7 @@ create ctxt document = withResource (Context.db ctxt) $ \c -> do
 
 update :: Ctxt -> Document -> IO ()
 update ctxt doc =
-  withResource (Context.db ctxt) $ \c -> void $ execute c "UPDATE documents SET object_key = ?, decryption_key = ?, file_type = ?, stipend_id = ?, verified_at = ? where id = ?" (objectKey doc, Binary (decryptionKey doc), fileType doc, stipendId doc, verifiedAt doc, State.Types.Document.id doc)
+  withResource (Context.db ctxt) $ \c -> void $ execute c "UPDATE documents SET object_key = ?, decryption_key = ?, file_type = ?, stipend_id = ?, verified_at = ? where id = ?" (objectKey doc, Binary (decryptionKey doc), fileType doc, stipendId doc, verifiedAt doc, Types.Document.id doc)
 
 deleteByStipend :: Ctxt -> Int -> IO ()
 deleteByStipend ctxt id' = do

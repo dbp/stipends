@@ -27,8 +27,8 @@ import           Context
 import qualified Handler.Reporter
 import qualified Handler.Stipend
 import qualified State.Stipend
-import qualified State.Types.Reporter      as Reporter
-import qualified State.Types.Stipend       as Stipend
+import qualified Types.Reporter            as Reporter
+import qualified Types.Stipend             as Stipend
 
 handle :: Ctxt -> IO (Maybe Response)
 handle ctxt =

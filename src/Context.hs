@@ -24,7 +24,7 @@ import           Web.Fn
 import qualified Web.Larceny                (Fill, Library, Substitutions)
 import qualified Web.Larceny                as L
 
-import           State.Types.Reporter
+import           Types.Reporter
 
 type Fill = Web.Larceny.Fill ()
 type Library = Web.Larceny.Library ()

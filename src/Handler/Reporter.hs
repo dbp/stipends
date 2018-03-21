@@ -28,7 +28,7 @@ import           Context
 import qualified Handler.Stipend
 import qualified State.Reporter            as State
 import qualified State.Stipend
-import           State.Types.Reporter
+import           Types.Reporter
 
 handle :: Ctxt -> IO (Maybe Response)
 handle ctxt = route ctxt [ path "login" // segment ==> loginH
@@ -42,7 +42,7 @@ loginH ctxt token = do
   case mr of
     Nothing -> return ()
     Just r -> do
-      setInSession ctxt reporterKey (tshow $ State.Types.Reporter.id r)
+      setInSession ctxt reporterKey (tshow $ Types.Reporter.id r)
       setMessage ctxt $ "Successfully logged in as " <> (fromMaybe "" $ name r) <> "."
   redirect "/"
 
