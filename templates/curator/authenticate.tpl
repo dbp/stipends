@@ -5,7 +5,7 @@
 
     <dfLabel ref="key">
       Private key (a long integer):<br/>
-      <dfInputTextArea ref="key" rows="5" cols="50">
+      <dfInputTextArea ref="key" rows="10" cols="75">
         
       </dfInputTextArea>
     </dfLabel>
