@@ -96,11 +96,11 @@ stipendForm ctxt =
   <*> pure ""
   <*> "amount" .: stringRead "Must be a number (without commas or $), like 25400" Nothing
   <*> "academic_year" .: choice (map (\yr -> (yr, tshow yr <> "-" <> tshow (yr+1))) [2013..2019]) Nothing
-  <*> "period" .: choice [(Stipend.TwoSemester, "Two semester (academic year)")
-                         ,(Stipend.Yearly, "Yearly")
+  <*> "period" .: choice [(Stipend.TwoSemester, "Two semesters (academic year)")
+                         ,(Stipend.Yearly, "Full year")
                          ,(Stipend.Semester, "One semester")
-                         ,(Stipend.Monthly, "Monthly")
-                         ,(Stipend.BiMonthly, "BiMonthly")] Nothing
+                         ,(Stipend.Monthly, "Month")
+                         ,(Stipend.BiMonthly, "Half-month")] Nothing
   <*> "summer_typical" .: choice [(Stipend.FundedAcademic, "Not typical")
                                    ,(Stipend.FundedYearRound, "Summer funding normally provided")
                                    ,(Stipend.FundedUnknown, "Unknown")] Nothing

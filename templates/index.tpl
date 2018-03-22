@@ -10,12 +10,13 @@
       <dfChildErrorList ref=""/>
 
       <dfLabel ref="amount">
-        Paid this amount:
-        <dfInput ref="amount" />
+        Paid:
+        $<dfInput ref="amount" />
       </dfLabel>
       <dfLabel ref="period">
-        as a 
-        <dfInputSelect ref="period" /> stipend
+        every
+        <dfInputSelect ref="period" />
+        as a stipend
       </dfLabel>
 
       <hr/>
