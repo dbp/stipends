@@ -3,66 +3,82 @@
 <bind tag="is-who"></bind>
 <apply template="_base">
 
-  <h2>Add a stipend (will be reviewed before publishing)</h2>
-  
-  <dfForm>
-    <dfChildErrorList ref=""/>
-
-    <dfLabel ref="amount">
-      Paid this amount:
-      <dfInput ref="amount" />
-    </dfLabel>
-    <dfLabel ref="period">
-      as a 
-      <dfInputSelect ref="period" /> stipend
-    </dfLabel>
-    <br/>
-
-    <br/>
-
-    <dfLabel ref="academic_year">
-      Academic Year for this stipend
-      <dfInputSelect ref="academic_year" />
-    </dfLabel>
-    <br/>
-
-    <dfLabel ref="summer_typical">
-      Is summer funding typically provided (or guaranteed)?
-      <dfInputSelect ref="summer_typical" />
-    </dfLabel>
-    <br/>
-
-    <dfLabel ref="year_in_program">
-      What year in the program is this stipend for?
-      <dfInputSelect ref="year_in_program" />
-    </dfLabel>
-    <br/>
-
-    <dfLabel ref="department">
-      What department is this for?
-      <dfInputSelect ref="department" />
-    </dfLabel>
-    <br/>
-
-    <dfLabel ref="saw_document">
-      Have you seen the offer letter that confirms this amount (if this is your own stipend, answer yes!)
-      <dfInputSelect ref="saw_document" />
-    </dfLabel>
-    <br/>
-
-    <dfLabel ref="notes">
-      Any other notes (including department if we didn't have it above).
-      <br/>
-      <dfInputTextArea rows="5" cols="90" ref="notes">
-
-      </dfInputTextArea>
-    </dfLabel>
-    <br/>
+  <div id="add-box" class="hidden">
+    <h2>Add a stipend (will be reviewed before publishing)</h2>
     
-    <dfInputSubmit />
-  </dfForm>
+    <dfForm>
+      <dfChildErrorList ref=""/>
 
-  <h2>All public data</h2>
+      <dfLabel ref="amount">
+        Paid this amount:
+        <dfInput ref="amount" />
+      </dfLabel>
+      <dfLabel ref="period">
+        as a 
+        <dfInputSelect ref="period" /> stipend
+      </dfLabel>
+
+      <hr/>
+
+      <dfLabel ref="academic_year">
+        Academic Year for this stipend
+        <dfInputSelect ref="academic_year" />
+      </dfLabel>
+      
+      <hr/>
+
+      <dfLabel ref="summer_typical">
+        Is summer funding typically provided (or guaranteed)?
+        <dfInputSelect ref="summer_typical" />
+      </dfLabel>
+
+      <hr/>
+
+      <dfLabel ref="year_in_program">
+        What year in the program is this stipend for?
+        <dfInputSelect ref="year_in_program" />
+      </dfLabel>
+
+      <hr/>
+
+      <dfLabel ref="department">
+        What department is this for?
+        <dfInputSelect ref="department" />
+      </dfLabel>
+
+      <hr/>
+
+      <dfLabel ref="saw_document">
+        Have you seen the offer letter confirming this amount (if this is your own stipend, answer yes!)
+        <dfInputSelect ref="saw_document" />
+      </dfLabel>
+
+      <hr/>
+
+      <dfLabel ref="notes">
+        Any other notes, including department if you put "Other" above.
+        (won't ever be posted publically, so you can include contact info if you are okay with us following up).
+        <br/>
+        <dfInputTextArea rows="5" cols="90" ref="notes">
+
+        </dfInputTextArea>
+      </dfLabel>
+
+      <hr/>
+
+      After submitting, you can attach a document (likely, an offer letter) that confirms the stipend. This will be securely encrypted so only the site <a href="/who" target="_blank">curators</a> can view it.
+
+      <p style="text-align: right;">
+        <dfInputSubmit value="Submit Stipend for Review" />
+      </p>
+    </dfForm>
+  </div>
+
+  <p id="add-button">
+    <span onclick="document.getElementById('add-box').className = ''; document.getElementById('add-button').className = 'hidden';">Add a stipend</span>
+  </p>
+  
+  <h2>All existing stipend data</h2>
 
   <departments>
     <div class="department">
