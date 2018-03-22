@@ -111,8 +111,8 @@ rating.
 - How to avoid duplicate data?
   
   If our main tactic to deal with anonymity is rely on correlation, what about duplicates?
-
-i.e., if someone just puts in the same entry 10 times. How do we tell that
+  
+  i.e., if someone just puts in the same entry 10 times. How do we tell that
      apart from 10 people in the same department entering in their data? We
      could do some client fingerprinting (IP address), drop a cookie on their
      browser, etc. Hash that and store that along with the data. Ideally we
@@ -121,6 +121,7 @@ i.e., if someone just puts in the same entry 10 times. How do we tell that
      to be acceptable?
 
 - How is this different from http://www.phdstipends.com
+  
   It should be more accurate! (Requires more work too...)
 
 # Who is uploading
