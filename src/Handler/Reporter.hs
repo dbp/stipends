@@ -32,6 +32,7 @@ import           Types.Reporter
 
 handle :: Ctxt -> IO (Maybe Response)
 handle ctxt = route ctxt [ path "login" // segment ==> loginH
+                         , path "logout" ==> logoutH
                          , path "new" ==> newH
                          , segment // path "stipends" ==> stipendsH
                          ]
@@ -44,6 +45,12 @@ loginH ctxt token = do
     Just r -> do
       setInSession ctxt reporterKey (tshow $ Types.Reporter.id r)
       setMessage ctxt $ "Successfully logged in as " <> (fromMaybe "" $ name r) <> "."
+  redirect "/"
+
+logoutH :: Ctxt -> IO (Maybe Response)
+logoutH ctxt = do
+  clearFromSession ctxt reporterKey
+  setMessage ctxt "Logged out..."
   redirect "/"
 
 getReporter :: Ctxt -> IO Reporter

@@ -12,7 +12,7 @@
         <li class="${is-about}"><a href="/about">How it works</a></li>
         <li class="${is-who}"><a href="/who">Who we are</a></li>
         <is-organizer>
-          <li class="organizer">Organizer: <name/></li>
+          <li class="organizer"><name/><a title="Logout" href="/reporter/logout">X</a></li>
         </is-organizer>
       </ul>
       

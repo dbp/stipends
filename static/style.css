@@ -30,9 +30,10 @@ a:hover {
 }
 
 .message {
-    background-color: #ae0000;
-    color: white;
+    background-color: #ccc;
+    color: black;
     margin: 10px 0;
+    padding: 5px;
 }
 
 .amount {
@@ -100,6 +101,13 @@ ul.menu li a:hover, ul.menu li.sel a {
     margin-left: auto;
 }
 
+.organizer a {
+    background-color: white;
+    color: #ae0000;
+    padding: 0 5px !important;
+    margin-left: 5px;
+    display: inline !important;
+}
 
 h2 {
     color: #ae0000;
