@@ -57,7 +57,8 @@
    stuff as soon as possible, and notifying is cheap & easy.
 ** DONE Add some automated tests
    CLOSED: [2018-03-21 Wed 18:36]
-** TODO Add footer w/ open source link
+** DONE Add footer w/ open source link
+   CLOSED: [2018-03-22 Thu 16:36]
 ** DONE Longer RSA keys (512bit too weak)
    CLOSED: [2018-03-21 Wed 21:55]
    Note that the AES keys are plenty strong enough (256bit), so what I need to
