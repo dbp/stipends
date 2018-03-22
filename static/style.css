@@ -137,3 +137,10 @@ h3.curator span {
     cursor: pointer;
     text-decoration: underline;
 }
+
+.footer {
+    padding: 10px;
+    margin: 10px;
+    border-top: 1px solid #ccc;
+    text-align: center;
+}

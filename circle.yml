@@ -1,7 +1,7 @@
 machine:
   environment:
     LANG: C.UTF-8
-    DATABASE_URL: postgresql://ubuntu:@127.0.0.1:5432/circle_test
+    DATABASE_URL: postgres://ubuntu:@127.0.0.1:5432/circle_test
     BUCKET_NAME:
     AWS_ACCESS_KEY_ID:
     AWS_SECRET_ACCESS_KEY:

@@ -19,5 +19,9 @@
       <div class="message"><render-message/></div>
       
       <apply-content/>
+
+      <div class="footer">
+        This site is open source: <a href="https://github.com/dbp/stipends">https://github.com/dbp/stipends</a>
+      </div>
     </body>
 </html>
