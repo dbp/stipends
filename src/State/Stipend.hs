@@ -56,23 +56,17 @@ verifiedUI ctxt s = do
                     Nothing -> 0
                     Just _  -> 1
   ds <- State.Document.getForStipend ctxt (Types.Stipend.id s)
-  let docs = case filter (\d -> isJust $ Document.verifiedAt d) ds of
-               [] -> 0
-               _  -> 1
-  let count = sawdoc + organizer + docs
+  let count = case filter (\d -> isJust $ Document.verifiedAt d) ds of
+               [] -> organizer + sawdoc
+               _  -> 3
   let total = 3
-  let message = case docs of
-                  1 -> "Verified by supporting encrypted documents"
-                  0 -> case organizer of
+  let message = case count of
+                  0 -> "Unverified"
+                  1 -> case organizer of
+                         1 -> "Reported to an organizer"
                          0 -> "Reported anonymously"
-                         _ -> case count of
-                                -- NOTE(dbp 2018-03-19): 0 & 3 shouldn't be able to
-                                -- happen based on control flow above, but leaving it here in case this gets
-                                -- reorganized (partiality isn't good).
-                                0 -> "Unverified"
-                                1 -> "Reported to an organizer"
-                                2 -> "Documents seen by an organizer"
-                                3 -> "Verified by encrypted documents"
+                  2 -> "Documents seen by an organizer"
+                  3 -> "Verified by encrypted documents"
   return (message, count, total)
 
 count :: Ctxt -> IO Int
