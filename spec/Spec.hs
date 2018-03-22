@@ -4,7 +4,7 @@ module Main where
 import qualified Configuration.Dotenv              as Dotenv
 import qualified Configuration.Dotenv.Types        as Dotenv
 import           Control.Logging
-import           Control.Monad                     (void)
+import           Control.Monad                     (void, when)
 import           Data.Default                      (def)
 import           Data.Maybe                        (isJust)
 import           Data.Pool                         (withResource)
