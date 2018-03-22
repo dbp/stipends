@@ -63,4 +63,5 @@
    Note that the AES keys are plenty strong enough (256bit), so what I need to
    do is re-encrypt them with a new, longer, RSA key and replace what's in the
    database (what's in S3 need not change).
-** TODO Add CI for test suite
+** DONE Add CI for test suite
+   CLOSED: [2018-03-22 Thu 14:33]
