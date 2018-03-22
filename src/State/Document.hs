@@ -24,6 +24,9 @@ get ctxt id' = withResource (Context.db ctxt) $ \c -> listToMaybe <$> query c "S
 getForStipend :: Ctxt -> Int -> IO [Document]
 getForStipend ctxt id' = withResource (Context.db ctxt) $ \c -> query c "SELECT id, created_at, object_key, decryption_key, file_type, stipend_id, verified_at FROM documents WHERE stipend_id = ?" (Only id')
 
+getAll :: Ctxt -> IO [Document]
+getAll ctxt = withResource (Context.db ctxt) $ \c -> query_ c "SELECT id, created_at, object_key, decryption_key, file_type, stipend_id, verified_at FROM documents"
+
 create :: Ctxt -> Document -> IO (Maybe Int)
 create ctxt document = withResource (Context.db ctxt) $ \c -> do
   r <- listToMaybe <$> query c "INSERT INTO documents (object_key, decryption_key, file_type, stipend_id, verified_at) VALUES (?,?,?,?,?) RETURNING id" (objectKey document, Binary (decryptionKey document), fileType document, stipendId document, verifiedAt document)

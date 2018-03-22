@@ -73,7 +73,7 @@ addH ctxt token = do
             (v, Nothing)       -> renderWith ctxt (formFills v) "document/add"
             (_, Just file) -> do
               key <- getRandomBytes 32
-              mdecryption_key <- RSA.encrypt (RSA.PublicKey 64 (pubkey ctxt) 0x10001) key
+              mdecryption_key <- RSA.encrypt (RSA.PublicKey 256 (pubkey ctxt) 0x10001) key
               -- NOTE(dbp 2018-03-18): We don't want to make this visible, but
               -- we can't continue, and we want to trigger a notification, so...
               case mdecryption_key of
@@ -145,7 +145,7 @@ showH ctxt id' = do
                               redirectReferer ctxt
                 Just doc -> do
                   log' $ tshow $ BS.length (decryptionKey doc)
-                  let msym_key = RSA.decrypt Nothing (RSA.PrivateKey (RSA.PublicKey 64 (pubkey ctxt) 0x10001) priv_key 0 0 0 0 0) (decryptionKey doc)
+                  let msym_key = RSA.decrypt Nothing (RSA.PrivateKey (RSA.PublicKey 256 (pubkey ctxt) 0x10001) priv_key 0 0 0 0 0) (decryptionKey doc)
                   case msym_key of
                     Left err -> do setMessage ctxt $ "Error decrypting decryption key: " <> tshow err
                                    redirectReferer ctxt

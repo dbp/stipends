@@ -55,6 +55,11 @@
 ** TODO Email when new stipends come in
    At least at the beginning (and maybe always), we'll want to be approving
    stuff as soon as possible, and notifying is cheap & easy.
-** TODO Add some automated tests
+** DONE Add some automated tests
+   CLOSED: [2018-03-21 Wed 18:36]
 ** TODO Add footer w/ open source link
-** TODO Longer RSA keys (512bit too weak)
+** DONE Longer RSA keys (512bit too weak)
+   CLOSED: [2018-03-21 Wed 21:55]
+   Note that the AES keys are plenty strong enough (256bit), so what I need to
+   do is re-encrypt them with a new, longer, RSA key and replace what's in the
+   database (what's in S3 need not change).
