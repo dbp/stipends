@@ -6,13 +6,14 @@ import qualified Configuration.Dotenv.Types        as Dotenv
 import           Control.Logging
 import           Control.Monad                     (void)
 import           Data.Default                      (def)
+import           Data.Maybe                        (isJust)
 import           Data.Pool                         (withResource)
 import           Data.Time.Clock                   (getCurrentTime)
 import           Database.PostgreSQL.Simple
 import           Migrations                        (runMigrations)
 import           Network.Wai.Session               (withSession)
 import           Network.Wai.Session.ClientSession (clientsessionStore)
-import           System.Environment                (setEnv)
+import           System.Environment                (lookupEnv, setEnv)
 import           Test.Hspec
 import           Test.Hspec.Fn
 import           Web.ClientSession                 (randomKey)
@@ -29,7 +30,9 @@ clearAll ctxt = void $ withResource (db ctxt) $ \c -> execute_ c "DELETE FROM do
 
 main :: IO ()
 main = withStdoutLogging $ do
-  setEnv "DATABASE_URL" "postgres://stipends:111@localhost:5432/stipends_test"
+  exists <- isJust <$> lookupEnv "DATABASE_URL"
+  when (not exists) $
+    setEnv "DATABASE_URL" "postgres://stipends:111@localhost:5432/stipends_test"
   Dotenv.loadFile Dotenv.defaultConfig { Dotenv.configPath = [".env.test"] }
   ctxt <- initializer
   runMigrations (db ctxt) "migrations"
