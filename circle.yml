@@ -11,6 +11,7 @@ dependencies:
     - tar xvzf /tmp/stack.tar.gz -C /tmp
     - sudo mv /tmp/stack-1.6.5-linux-x86_64-static/stack /usr/bin/stack
   override:
+    - stack upgrade
     - stack setup
     - stack build --jobs=4
     - stack test --no-run-tests
