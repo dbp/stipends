@@ -7,7 +7,7 @@
     <h2>Add a stipend (will be reviewed before publishing)</h2>
     
     <dfForm>
-      <dfChildErrorList ref=""/>
+      <dfChildErrorList class="error" ref=""/>
 
       <dfLabel ref="amount">
         Paid:
@@ -78,6 +78,11 @@
   <p id="add-button">
     <span onclick="document.getElementById('add-box').className = ''; document.getElementById('add-button').className = 'hidden';">Add a stipend</span>
   </p>
+  <script type="text/javascript">
+   if (document.getElementsByClassName("error").length > 0) {
+     document.getElementById("add-button").childNodes[1].onclick()
+   }
+  </script>
   
   <h2>All existing stipend data</h2>
 
