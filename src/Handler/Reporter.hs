@@ -31,8 +31,7 @@ import qualified State.Stipend
 import           Types.Reporter
 
 handle :: Ctxt -> IO (Maybe Response)
-handle ctxt = route ctxt [ path "login" // segment ==> loginH
-                         , path "logout" ==> logoutH
+handle ctxt = route ctxt [ path "logout" ==> logoutH
                          , path "new" ==> newH
                          , segment // path "stipends" ==> stipendsH
                          ]

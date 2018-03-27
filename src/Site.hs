@@ -83,6 +83,7 @@ site ctxt = route ctxt [ path "static" ==> staticServe "static"
                        , path "static" // segment ==>
                          \ctxt (_ :: Text) -> staticServe "static" ctxt
                        , end ==> Home.handle
+                       , path "login" // param "t" ==> Reporter.loginH
                        , path "reporter" ==> Reporter.handle
                        , path "stipend" ==> Stipend.handle
                        , path "document" ==> Document.handle

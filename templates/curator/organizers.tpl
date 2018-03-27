@@ -6,7 +6,7 @@
   <hr/>
   
   <reporters>
-    <created-at/> - <name/> - login: <a href="/reporter/login/${token}">/reporter/login/<token/></a><br/><br/>
+    <created-at/> - <name/> - login: <a href="/login?t=${token}">/login?t=<token/></a><br/><br/>
   </reporters>
 
 </apply>
