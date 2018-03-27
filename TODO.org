@@ -69,3 +69,6 @@
 ** TODO Curators should be able to easily correct data
 ** DONE Don't collapse form if there is a submission error!
    CLOSED: [2018-03-24 Sat 14:21]
+** TODO Curators should be able to click on stipends to get to the page where all info is shown
+   This way they can easily get to supporting documents, etc
+** TODO Organizers should be able to get to their uploaded stipends
