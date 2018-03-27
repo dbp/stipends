@@ -86,24 +86,67 @@
   
   <h2>All existing stipend data</h2>
 
-  <departments>
-    <div class="department">
-      <strong><department/></strong><br/>
-      <ul>
-        <years>
-          <li class="year">
-            <year/>:
-            <stipends>
-              <div class="amount">
-                <span title="${amount-note}">$<amount/> (<length-paid/>)</span><br/>
-                <verified>
-                  <span title="${note}">trusted: <bullets/></span>
-                </verified>
-              </div>
-            </stipends>
-          </li>
-        </years>
-      </ul>
+  <div class="data">
+    <div id="legend" class="legend shortened" onclick="document.getElementById('legend').className = 'legend shortened'; arguments[0].stopPropagation();">
+      <div class="overlay" onclick="document.getElementById('legend').className = 'legend'; arguments[0].stopPropagation();">↓expand↓</div>
+      <h3>Legend</h3>
+      <div class="row">
+        <div class="col"><span class="summer">summer</span></div>
+        <div class="col">salary paid over 12 months</div>
+      </div><!-- .row -->
+      <div class="row">
+        <div class="col"><span class="summer guarantee8mo">summer</span></div>
+        <div class="col">salary shown is paid over 8 month academic year: over summer, grad must find other funding, which may be impossible because of visa work requirements.</div>
+      </div><!-- .row -->
+      <div class="row">
+        <div class="col">●●●</div>
+        <div class="col">Offer letter confirming this stipend uploaded and verified by the <a href="/who">site curators</a>.</div>
+      </div><!-- .row -->
+      <div class="row">
+        <div class="col">●●○</div>
+        <div class="col">Offer letter seen by organizer with the grad union.</div>
+      </div><!-- .row -->
+      <div class="row">
+        <div class="col">●○○</div>
+        <div class="col">Self-reported or by organizer.</div>
+      </div><!-- .row -->
+      <div class="row">
+        <div class="col">○○○</div>
+        <div class="col">Reported secondhand.</div>
+      </div><!-- .row -->
+
+      <div class="collapse">↑close↑</div>
     </div>
-  </departments>
+    <br/>
+    <departments>
+      <h3><department/></h3>
+      <div class="department">
+        <div class="years">
+          <years>
+            <div class="year">
+              <div class="title"><year/></div>
+              <div class="stipends">
+                <stipends>
+                  <div class="stipend">
+                    <div class="row1">
+                      <div class="amount" title="${amount-note}">$<amount/></div>
+                      <div class="summer guarantee${length-paid}">summer</div>
+                    </div><!-- .row1 -->
+                    <div class="row2">
+                      <verified>
+                        <div class="trusted" title="${note}"><bullets/></div>
+                      </verified>
+                      <div class="cohort">
+                        <year-in-program/> yr PhD
+                      </div>
+                    </div><!-- .row2 -->
+                  </div> <!-- .stipend -->
+                </stipends>
+              </div> <!-- .stipends -->
+            </div> <!-- .year -->
+          </years>
+        </div><!-- .years -->
+      </div> <!-- .department -->
+    </departments>
+  </div>
 </apply>

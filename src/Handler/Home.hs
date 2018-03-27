@@ -56,7 +56,7 @@ groupStipends stipends =
   let depts = sort $ nub $ map (Stipend.department) stipends in
   map (\d -> (d, let stips = filter (\s -> Stipend.department s == d) stipends in
                  let years = sort $ nub $ map (Stipend.academicYear) stips in
-                   map (\y -> (y, sortOn Stipend.amount $ filter (\s -> Stipend.academicYear s == y) stips)) years)) depts
+                   map (\y -> (y, reverse $ sortOn Stipend.amount $ filter (\s -> Stipend.academicYear s == y) stips)) years)) depts
 
 departmentsSubs :: Ctxt -> [(Department, [(Year, [Stipend.Stipend])])] -> Context.Substitutions
 departmentsSubs ctxt groups =
@@ -75,6 +75,7 @@ departmentsSubs ctxt groups =
                                                                     ,("is-verified", if Stipend.sawDocument stip then fillChildren else textFill "")
                                                                     ,("not-verified", if Stipend.sawDocument stip then textFill "" else fillChildren)
                                                                     ,("length-paid", textFill $ State.Stipend.periodShort stip)
+                                                                    ,("year-in-program", textFill $ maybe "?" tshow (Stipend.yearInProgram stip))
                                                                     ])
                                                    stips)
                                                ])
