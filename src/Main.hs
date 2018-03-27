@@ -33,6 +33,7 @@ import           Database.PostgreSQL.Simple.FromRow
 import           GHC.IO.Encoding                    (setLocaleEncoding, utf8)
 import           Network.Wai                        (Response, pathInfo)
 import           Network.Wai.Handler.Warp           (run)
+import           Network.Wai.Middleware.ForceSSL    (forceSSL)
 import           Network.Wai.Middleware.Rollbar
 import           Network.Wai.Session                (withSession)
 import           Network.Wai.Session.ClientSession  (clientsessionStore)
@@ -51,9 +52,9 @@ import           Web.Heroku                         (parseDatabaseUrl)
 import qualified Web.Larceny                        as L
 
 import           Context
+import           Migrations
 import           Site
 import qualified State.Cache                        as Cache
-import Migrations
 
 
 main :: IO ()
@@ -82,4 +83,6 @@ main = withStdoutLogging $ do
              Right k -> return k
              Left _  -> newkey
   let store = clientsessionStore k
-  run port $ rb $ (withSession store "_session" def {setCookiePath = Just "/"} (sess ctxt) (toWAI ctxt site))
+  -- NOTE(dbp 2018-03-27): Currently our best test for being in devel :)
+  let ssl = if e then id else forceSSL
+  run port $ rb $ ssl $ (withSession store "_session" def {setCookiePath = Just "/"} (sess ctxt) (toWAI ctxt site))

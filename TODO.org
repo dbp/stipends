@@ -72,3 +72,5 @@
 ** TODO Curators should be able to click on stipends to get to the page where all info is shown
    This way they can easily get to supporting documents, etc
 ** TODO Organizers should be able to get to their uploaded stipends
+** DONE Force HTTPS
+   CLOSED: [2018-03-27 Tue 12:28]
