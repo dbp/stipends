@@ -11,6 +11,12 @@ body {
     }
 }
 
+.error {
+    background-color: #ae0000;
+    color: white;
+    padding: 10px;
+    list-style-type: none;
+}
 
 hr {
     border: 0;
