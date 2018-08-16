@@ -55,7 +55,7 @@ groupStipends :: [Stipend.Stipend] -> [(Department, [(Year, [Stipend.Stipend])])
 groupStipends stipends =
   let depts = sort $ nub $ map (Stipend.department) stipends in
   map (\d -> (d, let stips = filter (\s -> Stipend.department s == d) stipends in
-                 let years = sort $ nub $ map (Stipend.academicYear) stips in
+                 let years = reverse $ sort $ nub $ map (Stipend.academicYear) stips in
                    map (\y -> (y, reverse $ sortOn State.Stipend.computeYearly $ filter (\s -> Stipend.academicYear s == y) stips)) years)) depts
 
 departmentsSubs :: Ctxt -> [(Department, [(Year, [Stipend.Stipend])])] -> Context.Substitutions
