@@ -1,20 +1,6 @@
 resolver: lts-10.8
 packages:
-- '.'
-- location:
-    git: https://github.com/dbp/larceny.git
-    commit: 911f8f3abfd3a37de4ac39fd70cdd0b8574eb8a8
-  extra-dep: true
-- location:
-    git: https://github.com/positiondev/fn.git
-    commit: 7439d44ac8ef8372478e09cd19cc2bd7c66580a3
-  extra-dep: true
-  subdirs:
-  - fn
-- location:
-    git: https://github.com/positiondev/hspec-fn
-    commit: cf0607b5406ddf884dadf533c546377958cc35e8
-  extra-dep: true
+- .
 extra-deps:
 - digestive-functors-0.8.3.0
 - heroku-0.1.2.3
@@ -22,7 +8,14 @@ extra-deps:
 - logging-3.0.5
 - wai-session-clientsession-0.1
 - crypto-simple-0.1.0.0
-
+- git: https://github.com/dbp/larceny.git
+  commit: 911f8f3abfd3a37de4ac39fd70cdd0b8574eb8a8
+- git: https://github.com/positiondev/fn.git
+  commit: 7439d44ac8ef8372478e09cd19cc2bd7c66580a3
+  subdirs:
+  - fn
+- git: https://github.com/positiondev/hspec-fn
+  commit: cf0607b5406ddf884dadf533c546377958cc35e8
 
 # - html-entities-1.1.4
 # - digestive-functors-0.8.2.0
