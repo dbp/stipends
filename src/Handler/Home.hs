@@ -96,7 +96,7 @@ stipendForm ctxt =
   <*> pure (UTCTime (ModifiedJulianDay 0) 0)
   <*> pure ""
   <*> "amount" .: stringRead "Error: stipend amount must be just a number (without commas or $), like 25400" Nothing
-  <*> "academic_year" .: choice (map (\yr -> (yr, tshow yr <> "-" <> tshow (yr+1))) [2013..2020]) Nothing
+  <*> "academic_year" .: choice (map (\yr -> (yr, tshow yr <> "-" <> tshow (yr+1))) [2016..2021]) Nothing
   <*> "period" .: choice [(Stipend.TwoSemester, "Two semesters (academic year)")
                          ,(Stipend.Yearly, "Full year")
                          ,(Stipend.Semester, "One semester")
